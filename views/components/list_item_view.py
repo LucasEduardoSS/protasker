@@ -6,7 +6,7 @@ GENERAL_FONT = ("Tahoma", 11)
 IMAGES_PATH = "C:/Users/luedu/Documents/Projetos/Pycharm/ProTasker/images/"
 
 
-class RecordView(ctk.CTkFrame):
+class ListItemView(ctk.CTkFrame):
     def __init__(self, master, name, **kwargs):
         super().__init__(master, **kwargs)
 
@@ -23,13 +23,34 @@ class RecordView(ctk.CTkFrame):
             fill="x"
         )
 
-        title = ctk.CTkLabel(
+        title = ctk.CTkLabel(self, text=name, font=("Tahoma", 11))
+        title.pack(anchor="w", side="left", padx=(10, 0))
+
+        edit_icon = ctk.CTkImage(
+            light_image=Image.open(IMAGES_PATH + "edit-icon.png"),
+            dark_image=Image.open(IMAGES_PATH + "edit-icon.png"),
+            size=(20, 20)
+        )
+
+        edit_button = ctk.CTkButton(
             self,
-            text=name,
-            font=("Tahoma", 11)
+            width=30,
+            height=20,
+            text="Editar",
+            font=("Tahoma", 11),
+            image=edit_icon,
+            fg_color="transparent",
+            hover_color=self.cget("fg_color"),
+            command = self.edit_record
         )
-        title.pack(
-            anchor="w",
-            side="left",
-            padx=(10, 0)
+        edit_button.pack(
+            side="right",
+            padx=(0, 5)
         )
+
+    def edit_record(self):
+        pass
+
+    def toggle_filter_tab(self):
+        pass
+

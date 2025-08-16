@@ -7,12 +7,10 @@ IMAGES_PATH = "C:/Users/luedu/Documents/Projetos/Pycharm/ProTasker/images/"
 
 
 class CardView(ctk.CTkFrame):
-    def __init__(self, master, name, **kwargs):
+    def __init__(self, master, card_info, **kwargs):
         super().__init__(master, **kwargs)
 
-        self._card_meta = {
-            "name": name
-        }
+        self._card_meta = {}
 
         self.configure(
             fg_color="#3E4D66",
@@ -68,15 +66,15 @@ class CardView(ctk.CTkFrame):
 
 
 class CardPessoa(CardView):
-    def __init__(self, master, name, **kwargs):
-        super().__init__(master, name, **kwargs)
+    def __init__(self, master, person_info: dict, **kwargs):
+        super().__init__(master, **kwargs)
 
         # Atributos da pessoa
         self._card_meta.update({
-            "name": "Nova Pessoas",
-            "role": "Faxineiro",
-            "sector": None,
-            "company": None
+            "name": person_info["name"],
+            "role": person_info["role"],
+            "sector": person_info["sector"],
+            "company": person_info["company"]
         })
 
         role_label = ctk.CTkLabel(

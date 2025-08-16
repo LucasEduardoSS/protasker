@@ -5,32 +5,23 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="3f91b5e1-fcfa-4470-8913-e6af9ae36c30" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/ProTasker.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/database/db.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/models/model_form.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/models/pessoa_model.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/models/setor_model.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/models/tarefa_model.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/testing.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/views/components/buttons_view.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/views/components/card_view.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/views/components/list_item_view.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/views/components/record_view.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/views/main_view.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/views/menu/menu_view.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/views/sidebar/sidebar_tab_view.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/views/sidebar/sidebar_view.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/views/windows/base_window_view.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/views/workspace/card_container_view.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/views/workspace/introduction_view.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/views/workspace/split_content_view.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/views/workspace/workspace_tab_view.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/views/workspace/workspace_toolbar_view.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/code_arquive/set_view_mode.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/views/components/labeled_entry_view.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/views/windows/cadastro_pessoa_view.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/views/windows/cadastro_setor_view.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/views/windows/cadastro_tarefa_view.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dictionaries/project.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dictionaries/project.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/model_form.py" beforeDir="false" afterPath="$PROJECT_DIR$/code_arquive/model_form.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/pessoa_model.py" beforeDir="false" afterPath="$PROJECT_DIR$/models/person_model.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/setor_model.py" beforeDir="false" afterPath="$PROJECT_DIR$/models/sector_model.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/tarefa_model.py" beforeDir="false" afterPath="$PROJECT_DIR$/models/task_model.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/views/components/card_view.py" beforeDir="false" afterPath="$PROJECT_DIR$/views/components/card_view.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/views/windows/base_window_view.py" beforeDir="false" afterPath="$PROJECT_DIR$/views/windows/base_window_view.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/views/workspace/split_content_view.py" beforeDir="false" afterPath="$PROJECT_DIR$/views/workspace/split_content_view.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/views/workspace/workspace_tab_view.py" beforeDir="false" afterPath="$PROJECT_DIR$/views/workspace/workspace_tab_view.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/views/workspace/workspace_toolbar_view.py" beforeDir="false" afterPath="$PROJECT_DIR$/views/workspace/workspace_toolbar_view.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -47,6 +38,18 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;LucasEduardoSS&quot;
+  }
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/LucasEduardoSS/protasker.git&quot;,
+    &quot;accountId&quot;: &quot;9e332aeb-8b2c-4b62-a7a0-bcd8c32bcc42&quot;
+  }
+}</component>
   <component name="HighlightingSettingsPerFile">
     <setting file="file://$USER_HOME$/AppData/Local/Programs/Python/Python313/Lib/tkinter/__init__.py" root0="SKIP_INSPECTION" />
     <setting file="file://$PROJECT_DIR$/.venv/Lib/site-packages/customtkinter/windows/widgets/ctk_segmented_button.py" root0="SKIP_INSPECTION" />
@@ -63,25 +66,30 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
-    &quot;Python.__init__.executor&quot;: &quot;Run&quot;,
-    &quot;Python.ctk_combobox.executor&quot;: &quot;Run&quot;,
-    &quot;Python.main.executor&quot;: &quot;Run&quot;,
-    &quot;Python.testing.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "Python.__init__.executor": "Run",
+    "Python.ctk_combobox.executor": "Run",
+    "Python.main.executor": "Run",
+    "Python.testing.executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "git-widget-placeholder": "main",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "vcs.Git",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\luedu\Documents\Projetos\Pycharm\protasker\code_arquive" />
+    </key>
+  </component>
   <component name="RunManager">
     <configuration name="main" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="protasker" />
@@ -151,14 +159,27 @@
       <workItem from="1755130206229" duration="4089000" />
       <workItem from="1755141272539" duration="684000" />
       <workItem from="1755219678942" duration="7284000" />
-      <workItem from="1755300660961" duration="1090000" />
+      <workItem from="1755300660961" duration="12460000" />
+      <workItem from="1755315554689" duration="12640000" />
     </task>
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
   </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
+    <SUITE FILE_PATH="coverage/protasker$main.coverage" NAME="main Coverage Results" MODIFIED="1755363476051" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/ProTasker$testing.coverage" NAME="testing Coverage Results" MODIFIED="1754014065568" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/ProTasker$__init__.coverage" NAME="__init__ Coverage Results" MODIFIED="1754015176929" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$USER_HOME$/AppData/Local/Programs/Python/Python313/Lib/tkinter" />
     <SUITE FILE_PATH="coverage/ProTasker$ctk_combobox.coverage" NAME="ctk_combobox Coverage Results" MODIFIED="1754005325207" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/.venv/Lib/site-packages/customtkinter/windows/widgets" />

@@ -1,5 +1,6 @@
 import customtkinter as ctk
 
+from utils.gui import center_window
 from views.menu.menu_view import Menu
 from views.workspace.split_content_view import SplitContentView
 from views.sidebar.sidebar_view import SidebarView
@@ -17,3 +18,6 @@ class ProTaskerView(ctk.CTk):
 
         self.sidebar = SidebarView(self)
         self.split_content = SplitContentView(self)
+
+        # agenda para rodar após o pack/layout
+        self.after(0, lambda: center_window(self, (1000, 600)))

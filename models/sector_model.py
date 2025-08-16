@@ -2,9 +2,9 @@ from peewee import Model, CharField
 from database.db import database
 
 
-class Setor(Model):
-    nome = CharField()
+class Sector(Model):
+    name = CharField()
 
     class Meta:
         database = database
-        table_name = 'setor'
+        table_name = 'sector'

@@ -42,12 +42,6 @@ class SplitContentView(ttk.PanedWindow):
         self.workspace.grid_rowconfigure(2, minsize=0)
         self.workspace._segmented_button.grid(row=0, column=0, sticky="w", ipadx=20)
 
-        # Configura o modo de visualização
-        self.workspace.set_view_mode("Tarefas", "Lista")
-        self.workspace.set_view_mode("Pessoas", "Cards")
-        self.workspace.set_view_mode("Setores", "Lista")
-        self.workspace.set_view_mode("Distribuições", "Cards")
-
     def toggle_sidebar_tabs(self, tab_id):
         """ Metodo para gerenciar a exibição das tabs da sidebar. Adiciona
         as tabs antes do workspace. """

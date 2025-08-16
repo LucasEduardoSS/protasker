@@ -1,7 +1,9 @@
 import customtkinter as ctk
 from PIL import Image
 
-from views.windows.base_window_view import BaseWindowView
+from views.windows.cadastro_pessoa_view import CadastroPessoaView
+from views.windows.cadastro_tarefa_view import CadastroTarefaView
+from views.windows.cadastro_setor_view import CadastroSetorView
 
 # Project Config
 GENERAL_FONT = ("Tahoma", 11)
@@ -93,6 +95,7 @@ class WorkspaceToolbarView(ctk.CTkFrame):
             command = self._on_mode_change,
         )
 
+        # Icones
         cards_icon = ctk.CTkImage(light_image=Image.open(IMAGES_PATH + "cards-icon.png"),
             dark_image=Image.open(IMAGES_PATH + "cards-icon.png"), size=(25, 25))
         list_icon = ctk.CTkImage(light_image=Image.open(IMAGES_PATH + "list-icon.png"),
@@ -107,6 +110,10 @@ class WorkspaceToolbarView(ctk.CTkFrame):
             pady=2,
             ipadx=20
         )
+
+        # Seta o switch no padrão configurado na tab
+        view_switch.set(self.tab_info["tab_meta"]["view_mode"])
+
         return view_switch
 
     def _on_mode_change(self, value: str):
@@ -120,13 +127,12 @@ class WorkspaceToolbarView(ctk.CTkFrame):
             self.tab_info["tab_meta"]["view_mode"] = "Lista"
 
     def add(self):
-
         match self.tab_info["tab_name"]:
             case "Pessoas":
-                BaseWindowView(self.tab_info, "Cadastrar Pessoa")
+                CadastroPessoaView(self.tab_info)
             case "Tarefas":
-                BaseWindowView(self.tab_info, "Cadastrar Tarefa")
+                CadastroTarefaView(self.tab_info)
             case "Setores":
-                BaseWindowView(self.tab_info, "Cadastrar Setor")
+                CadastroSetorView(self.tab_info)
             case "Distribuições":
                 pass

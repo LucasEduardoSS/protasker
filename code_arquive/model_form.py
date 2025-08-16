@@ -1,14 +1,14 @@
 import customtkinter as ctk
 
-
 class ModelForm(ctk.CTkFrame):
     """
     Cria dinamicamente um formulário baseado em um modelo PeeWee.
     """
-    def __init__(self, master, model_class, **kwargs):
+    def __init__(self, master, model_class, widget_overrides: dict[str, ctk.CTkBaseClass] = None, **kwargs):
         super().__init__(master, **kwargs)
         self.model_class = model_class
         self.entries = {}
+        self._overrides = widget_overrides or {}
 
         # Itera sobre todos os campos do modelo
         row = 0
@@ -21,11 +21,16 @@ class ModelForm(ctk.CTkFrame):
             lbl = ctk.CTkLabel(self, text=name.replace("_", " ").title(), font=("Tahoma", 11))
             lbl.grid(row=row, column=0, sticky="e", padx=5, pady=5)
 
-            # Entry (aqui você pode criar tipos diferentes conforme field)
-            ent = ctk.CTkEntry(self, placeholder_text=f"Digite {name}", font=("Tahoma", 11))
-            ent.grid(row=row, column=1, sticky="we", padx=5, pady=5)
+            # Widget: override ou entry padrão
+            if name in self._overrides:
+                widget = self._overrides[name](self)
+            else:
+                widget = ctk.CTkEntry(
+                    self, placeholder_text=f"Digite {name}", font=("Tahoma", 11)
+                )
 
-            self.entries[name] = ent
+            widget.grid(row=row, column=1, sticky="we", padx=5, pady=5)
+            self.entries[name] = widget
             row += 1
 
         # Faz coluna 1 (entries) expandir
