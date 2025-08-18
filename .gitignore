@@ -1,1 +1,4 @@
-.idea/vcs.xml
+.idea
+/views/workspace/__pycache__
+/views/components/__pycache__
+/utils/__pycache__

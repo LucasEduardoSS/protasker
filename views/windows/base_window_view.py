@@ -1,7 +1,5 @@
 import customtkinter as ctk
 
-from views.components.labeled_entry_view import LabeledEntryView
-
 
 class BaseWindowView(ctk.CTkToplevel):
     def __init__(self, tab_info: dict, **kwargs):
@@ -22,7 +20,5 @@ class BaseWindowView(ctk.CTkToplevel):
         """Retorna um dict com os valores atuais do formulário."""
         data = {}
         for name, widget in self.entries.items():
-            # Resgata o valor se possuir uma entry box
-            if isinstance(widget, LabeledEntryView):
-                data[name] = widget.entry.get().strip()
+            data[name] = widget.get()
         return data

@@ -54,17 +54,18 @@ class CardContainer(ctk.CTkScrollableFrame):
         self.card_h = card_h
         self.pad_x = pad_x
         self.pad_y = pad_y
+
+        # Guarda os cards do container
         self.cards = []
 
         # Recalcula layout sempre que o container muda de largura
-        self.bind("<Configure>", lambda e: self._relayout())
+        self.bind("<Configure>", lambda e: self.relayout())
 
     def add_card(self, card: ctk.CTkFrame):
         # card deve ter master=self e não chamar pack() internamente
         self.cards.append(card)
-        self._relayout()
 
-    def _relayout(self):
+    def relayout(self):
         container_width = self.winfo_width()
 
         # calcula quantas colunas cabem

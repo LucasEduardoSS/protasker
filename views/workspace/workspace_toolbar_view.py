@@ -120,10 +120,12 @@ class WorkspaceToolbarView(ctk.CTkFrame):
         if value == "Cards":
             self.tab_info["tab_meta"]["list_container"].pack_forget()
             self.tab_info["tab_meta"]["cards_container"].pack(fill="both", expand=True)
+            self.tab_info["tab_meta"]["cards_container"].relayout()
             self.tab_info["tab_meta"]["view_mode"] = "Cards"
         else:
             self.tab_info["tab_meta"]["cards_container"].pack_forget()
             self.tab_info["tab_meta"]["list_container"].pack(fill="both", expand=True)
+            self.tab_info["tab_meta"]["list_container"].relayout()
             self.tab_info["tab_meta"]["view_mode"] = "Lista"
 
     def add(self):

@@ -62,6 +62,7 @@ class WorkspaceTabView(ctk.CTkTabview):
 
         # Containers para modos de visualização
         cards_container = CardContainer(content, fg_color="transparent")
+        #list_container = ListContainer(content, fg_color="transparent")  <-- TODO: CRIAR CONTAINER DE LISTA
         list_container = ctk.CTkScrollableFrame(content, fg_color="transparent")
 
         # Padrão: exibir "Cards"
