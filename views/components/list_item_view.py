@@ -38,7 +38,6 @@ class ListItemView(CTkFrame):
     def toggle_filter_tab(self):
         pass
 
-
 class ListItemPessoa(ListItemView):
     def __init__(self, master, sector_info: dict, **kwargs):
         super().__init__(master, **kwargs)
