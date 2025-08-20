@@ -1,0 +1,15 @@
+
+- Detalhamento de registros na tab da sidebar
+- Menus
+- Comando para botão de editar registros
+- Janela para geração de distribuições
+- Funções de distribuição de tarefas
+- Carregamento de cards e itens na inicialização
+- Rever toolbar_view
+- Finalizar a tab 'introdução'
+
+< IDEIAS >
+
+- Criar um sistema de busca dentro da tab de registros
+- Tab da sidebar para visualizar árvore de tarefas
+- Criar uma classe CadastroView

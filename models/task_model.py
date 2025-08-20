@@ -1,13 +1,14 @@
 from peewee import Model, CharField, DateField, ForeignKeyField
 
-from models.sector_model import Sector
 from database.db import database
+from models.sector_model import Sector
 
 class Task(Model):
-    title = CharField()
+    name = CharField()
     description = CharField()
     sector = ForeignKeyField(Sector, backref='tasks', null=True)
     priority = CharField()
+    dependencies = CharField()
     creation_date = DateField()
     forecast_date = DateField()
     closure_date = DateField()

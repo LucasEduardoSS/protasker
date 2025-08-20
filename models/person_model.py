@@ -6,7 +6,7 @@ from models.sector_model import Sector
 class Person(Model):
     name = CharField()
     role = CharField()
-    sector = ForeignKeyField(Sector, backref='people', null=True)
+    sector = ForeignKeyField(Sector, backref='members', null=True)
     company = CharField()
 
     class Meta:

@@ -13,7 +13,7 @@ class App(ctk.CTk):
         self.geometry("800x600")
 
         # Create the PanedWindow (horizontal)
-        self.paned = ttk.PanedWindow(self, orient=tk.HORIZONTAL)
+        """self.paned = ttk.PanedWindow(self, orient=tk.HORIZONTAL)
         self.paned.pack(fill=tk.BOTH, expand=True)
 
         # Left frame
@@ -26,7 +26,12 @@ class App(ctk.CTk):
 
         # Add sample widgets
         ctk.CTkLabel(self.left_frame, text="Left Frame").pack(padx=10, pady=10)
-        ctk.CTkLabel(self.right_frame, text="Right Frame").pack(padx=10, pady=10)
+        ctk.CTkLabel(self.right_frame, text="Right Frame").pack(padx=10, pady=10)"""
+
+        dict1 = {"nome1": "valor1", "nome2": "valor2"}
+
+        for value in dict1.values():
+            print(value)
 
 
 if __name__ == "__main__":
