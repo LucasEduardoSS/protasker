@@ -24,13 +24,12 @@ class ListItemView(CTkFrame):
                 fg_color="transparent",
                 font=("Tahoma", 11, "bold"),
                 height=20,
-                anchor="w"
             )
-            name_lb.pack(side="left", padx=5)
+            name_lb.pack(side="left", ipadx=10)
 
             # Valor do campo
             value_label = CTkLabel(self, text=field[1], fg_color="transparent", font=("Tahoma", 11))
-            value_label.pack(side="left", padx=5)
+            value_label.pack(side="left", padx=(0, 10))
 
     def edit_record(self):
         pass
@@ -39,14 +38,17 @@ class ListItemView(CTkFrame):
         pass
 
 class ListItemPessoa(ListItemView):
-    def __init__(self, master, sector_info: dict, **kwargs):
+    def __init__(self, master, person_info: dict, **kwargs):
         super().__init__(master, **kwargs)
 
-        person_meta = {
-            "Setor": sector_info["name"]
+        self._person_meta = {
+            "Nome": person_info["name"],
+            "Cargo": person_info["role"],
+            "Setor": person_info["sector"],
+            "Empresa": person_info["company"]
         }
 
-        self.load_fields(person_meta)
+        self.load_fields(self._person_meta)
 
 
 class ListItemTarefa(ListItemView):
@@ -54,22 +56,22 @@ class ListItemTarefa(ListItemView):
         super().__init__(master, **kwargs)
 
         # Atributos da tarefa
-        task_meta = {
+        self._task_meta = {
             "Tarefa": task_info["name"],
             "Descrição": task_info["description"],
             "Prioridade": task_info["priority"],
             "Status": task_info["status"]
         }
 
-        self.load_fields(task_meta)
+        self.load_fields(self._task_meta)
 
 
 class ListItemSetor(ListItemView):
     def __init__(self, master, sector_info: dict, **kwargs):
         super().__init__(master, **kwargs)
 
-        sector_meta = {
+        self._sector_meta = {
             "Setor": sector_info["name"]
         }
 
-        self.load_fields(sector_meta)
+        self.load_fields(self._sector_meta)

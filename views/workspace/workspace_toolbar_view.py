@@ -53,7 +53,7 @@ class WorkspaceToolbarView(ctk.CTkFrame):
         self.create_button("filter-filled-icon.png", 25, lambda: self.tab_info["tab_master"].toggle_filter_tab)
         self.view_mode_switch = self.create_view_mode_switch()
 
-    def create_button(self, image: str, image_size: int, command):  # (Rascunho)
+    def create_button(self, image: str, image_size: int, command):
         """ Padroniza a criação de botões para toolbar_left """
         icon_image = ctk.CTkImage(
             light_image=Image.open(IMAGES_PATH + image),

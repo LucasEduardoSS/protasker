@@ -21,4 +21,4 @@ class ListContainer(CTkScrollableFrame):
 
         # 2) Reposiciona todos os itens em ordem
         for item in self.list_items:
-            item.pack(anchor="nw", side="top", padx=10, pady=5, ipadx=5, fill="x")
+            item.pack(anchor="nw", side="top", fill="x", padx=(0, 10), pady=5)

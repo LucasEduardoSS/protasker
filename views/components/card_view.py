@@ -28,7 +28,7 @@ class CardView(ctk.CTkFrame):
 
     def load_fields(self, fields: dict):
         card_info_frame = ctk.CTkFrame(self)
-        card_info_frame.grid(row=0, column=0, padx=2, pady=2, ipadx=2, ipady=2, sticky="nsew")
+        card_info_frame.grid(row=0, column=0, padx=5, pady=5, ipadx=2, ipady=2, sticky="nsew")
         card_info_frame.configure(fg_color="transparent")
 
         for field in fields.items():
@@ -38,13 +38,13 @@ class CardView(ctk.CTkFrame):
 
             # Nome do campo
             lb = ctk.CTkLabel(card_info_frame, text=field[0]+":", fg_color="transparent", font=("Tahoma", 11, "bold"),
-                              height=20, anchor="w", justify="left")
+                              height=10, anchor="w", justify="left")
             lb.pack(side="top", anchor="w", padx=5, pady=(5, 0), fill="x", expand=True)
 
             # Valor do campo
             lb = ctk.CTkLabel(card_info_frame, text=field[1], fg_color="transparent", font=("Tahoma", 11),
-                              height=20, anchor="w", justify="left")
-            lb.pack(side="top", anchor="w", padx=5, pady=2, fill="x", expand=True)
+                              height=10, anchor="w", justify="left")
+            lb.pack(side="top", anchor="w", padx=5, pady=4, fill="x", expand=True)
 
     def edit_card(self):
         pass

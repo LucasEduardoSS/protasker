@@ -33,7 +33,7 @@ class SidebarView(ctk.CTkFrame):
         icon_image = ctk.CTkImage(
             light_image=Image.open(icon_path),
             dark_image=Image.open(icon_path),
-            size=(20, 20)  # ajuste o tamanho conforme necessário
+            size=(20, 20)
         )
 
         button = ctk.CTkButton(
