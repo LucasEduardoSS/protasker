@@ -77,7 +77,7 @@ class WorkspaceTabView(ctk.CTkTabview):
         })
 
         # Constrói o container padrão
-        toolbar.on_mode_change(self.tabs_meta[name]["view_mode"])
+        toolbar.view_mode_switch.on_mode_change(self.tabs_meta[name]["view_mode"])
 
     def introduction(self):
         # Tab de boas vindas

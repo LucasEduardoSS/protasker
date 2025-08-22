@@ -5,6 +5,7 @@ class BaseWindowView(CTkToplevel):
     def __init__(self, tab_info: dict, **kwargs):
         super().__init__(**kwargs)
         self.configure(fg_color="#2E333C")
+        self.iconbitmap("images/protasker_icon.ico")
 
         # Mantém sobre a janela principal
         self.grab_set()

@@ -12,6 +12,7 @@ ctk.set_default_color_theme("blue")
 pro_tasker_view = ProTaskerView()
 
 if __name__ == "__main__":
+    # Cria as tabelas
     database.connect()
     database.drop_tables([Person, Task, Sector])
     database.create_tables([Person, Task, Sector], safe=True)
