@@ -1,6 +1,7 @@
 import customtkinter as ctk
 
 from views.components.edit_button_view import EditButton
+from models.sector_model import Sector
 
 
 class CardView(ctk.CTkFrame):
@@ -58,7 +59,7 @@ class CardPessoa(CardView):
         self._card_meta = {
             "Nome": person_info["name"],
             "Cargo": person_info["role"],
-            "Setor": person_info["sector"],
+            "Setor": Sector.get_by_id(person_info["sector"]).name if person_info["sector"] is not None else None,
             "Empresa": person_info["company"]
         }
         self.load_fields(self._card_meta)
@@ -72,8 +73,9 @@ class CardTarefa(CardView):
         self._card_meta = {
             "Tarefa": task_info["name"],
             "Descrição": task_info["description"],
+            "Setor": Sector.get_by_id(task_info["sector"]).name if task_info["sector"] is not None else None,
             "Prioridade": task_info["priority"],
-            "Status": task_info["status"]
+            "Status": "Pendente"
         }
         self.load_fields(self._card_meta)
 

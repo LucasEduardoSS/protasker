@@ -1,7 +1,6 @@
 import customtkinter as ctk
 
 from views.workspace.workspace_toolbar_view import WorkspaceToolbarView
-from views.workspace.introduction_view import IntroductionView
 from views.workspace.containers.card_container_view import CardContainer
 from views.workspace.containers.list_container_view import ListContainer
 
@@ -32,9 +31,6 @@ class WorkspaceTabView(ctk.CTkTabview):
 
         # Metadados por tab
         self.tabs_meta = {}  # name -> dict
-
-        # Cria a tab de boas vindas
-        self.introduction()
 
     def add(self, name, **kwargs):
         # Cria a tab padrão do CTkTabview
@@ -78,13 +74,3 @@ class WorkspaceTabView(ctk.CTkTabview):
 
         # Constrói o container padrão
         toolbar.view_mode_switch.on_mode_change(self.tabs_meta[name]["view_mode"])
-
-    def introduction(self):
-        # Tab de boas vindas
-        super().add("Boas vindas")
-
-        # Armazena a tab
-        tab = self.tab("Boas vindas")
-
-        introduction_view = IntroductionView(tab, fg_color="transparent")
-        introduction_view.pack(fill="both", expand=True)

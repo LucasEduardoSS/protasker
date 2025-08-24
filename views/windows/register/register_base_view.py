@@ -18,6 +18,7 @@ class BaseWindowView(CTkToplevel):
 
         self.tab_info = tab_info
         self.entries = {}
+        self.data = None
 
     def _build(self, entries: dict):
         # Posiciona os campos
@@ -32,5 +33,8 @@ class BaseWindowView(CTkToplevel):
         """Retorna um dict com os valores atuais do formulário."""
         data = {}
         for name, widget in self.entries.items():
-            data[name] = widget.get()
+           data[name] = widget.get()
         return data
+
+    def _on_save(self):
+        self.data = self.get_data()

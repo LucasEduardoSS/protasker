@@ -1,9 +1,9 @@
 import customtkinter as ctk
 from PIL import Image
 
-from views.windows.cadastro_pessoa_view import CadastroPessoaView
-from views.windows.cadastro_tarefa_view import CadastroTarefaView
-from views.windows.cadastro_setor_view import CadastroSetorView
+from views.windows.register.register_person_view import CadastroPessoaView
+from views.windows.register.register_task_view import CadastroTarefaView
+from views.windows.register.register_sector_view import CadastroSetorView
 
 IMAGES_PATH = "C:/Users/luedu/Documents/Projetos/Pycharm/ProTasker/images/"
 
@@ -34,7 +34,7 @@ class AddButton(ToolbarBaseButtonView):
         add_icon = ctk.CTkImage(
             light_image=Image.open(IMAGES_PATH + "add-icon.png"),
             dark_image=Image.open(IMAGES_PATH + "add-icon.png"),
-            size=(25, 25)
+            size=(20, 20)
         )
 
         self.configure(
@@ -64,7 +64,7 @@ class FilterButton(ToolbarBaseButtonView):
         filter_icon = ctk.CTkImage(
             light_image=Image.open(IMAGES_PATH + "filter-icon.png"),
             dark_image=Image.open(IMAGES_PATH + "filter-icon.png"),
-            size=(30, 30)
+            size=(25, 25)
         )
 
         self.configure(

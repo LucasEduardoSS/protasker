@@ -1,13 +1,15 @@
 
-- Detalhamento de registros na tab da sidebar
 - Menus
 - Comando para botão de editar registros
 - Janela para geração de distribuições
 - Funções de distribuição de tarefas
 - Carregamento de cards e itens na inicialização
-- Finalizar a tab 'introdução'
+- Tab de controle da sidebar
+- Tab de detalhes da sidebar
 
 < IDEIAS >
 
 - Criar um sistema de busca dentro da tab de registros
 - Tab da sidebar para visualizar árvore de tarefas
+- Remover as classes derivadas de CardView e ListItemView
+- Adicionar imagens na tab 'primeiros-passos' da sidebar

@@ -1,7 +1,7 @@
 from utils.gui import center_window
 from models.sector_model import Sector
-from views.windows.base_window_view import BaseWindowView
-from views.components.labeled_entry_view import LabeledEntryView
+from views.windows.register.register_base_view import BaseWindowView
+from views.components.forms_buttons.labeled_entry_view import LabeledEntryView
 from views.components.card_view import CardSetor
 from views.components.list_item_view import ListItemSetor
 

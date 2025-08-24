@@ -1,9 +1,9 @@
 from utils.gui import center_window
 from models.task_model import Task
-from views.windows.base_window_view import BaseWindowView
+from views.windows.register.register_base_view import BaseWindowView
 from views.components.card_view import CardTarefa
-from views.components.labeled_entry_view import LabeledEntryView
-from views.components.labeled_combobox_view import SectorField
+from views.components.forms_buttons.labeled_entry_view import LabeledEntryView
+from views.components.forms_buttons.labeled_combobox_view import SectorField
 from views.components.list_item_view import ListItemTarefa
 
 
@@ -23,8 +23,7 @@ class CadastroTarefaView(BaseWindowView):
             "sector": SectorField(self.main_frame, "Setor"),
             "priority": LabeledEntryView(self.main_frame, "Prioridade", "Baixa, Média, Alta"),
             "dependencies": LabeledEntryView(self.main_frame, "Dependências"),
-            "urgent": LabeledEntryView(self.main_frame, "Urgente", "Sim / Não"),
-            "forecast_date": LabeledEntryView(self.main_frame, "Data prevista", "dd/mm/aaaa"),
+            "deadline": LabeledEntryView(self.main_frame, "Data limite", "dd/mm/aaaa")
         })
         self._build(self.entries)
 

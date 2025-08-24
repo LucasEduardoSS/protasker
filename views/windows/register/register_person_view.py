@@ -1,9 +1,9 @@
 from utils.gui import center_window
 from models.person_model import Person
-from views.windows.base_window_view import BaseWindowView
+from views.windows.register.register_base_view import BaseWindowView
 from views.components.card_view import CardPessoa
-from views.components.labeled_entry_view import LabeledEntryView
-from views.components.labeled_combobox_view import SectorField
+from views.components.forms_buttons.labeled_entry_view import LabeledEntryView
+from views.components.forms_buttons.labeled_combobox_view import SectorField
 from views.components.list_item_view import ListItemPessoa
 
 

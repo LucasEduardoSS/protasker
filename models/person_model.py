@@ -7,7 +7,7 @@ class Person(Model):
     name = CharField()
     role = CharField()
     sector = ForeignKeyField(Sector, backref='members', null=True)
-    company = CharField()
+    company = CharField(default="Sem empresa", null=True)
 
     class Meta:
         database = database
