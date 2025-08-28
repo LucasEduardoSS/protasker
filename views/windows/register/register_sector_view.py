@@ -1,11 +1,11 @@
 from utils.gui import center_window
 from models.sector_model import Sector
-from views.windows.register.register_base_view import BaseWindowView
-from views.components.forms_buttons.labeled_entry_view import LabeledEntryView
-from views.components.card_view import CardSetor
-from views.components.list_item_view import ListItemSetor
+from views.windows.register.register_base_view import RegisterBaseWindowView
+from views.components.forms_buttons.labeled_entry import LabeledEntryView
+from views.components.card import CardSetor
+from views.components.list_item import ListItemSetor
 
-class CadastroSetorView(BaseWindowView):
+class RegisterSectorView(RegisterBaseWindowView):
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
         self.title("Cadastro de Setor")

@@ -1,5 +1,5 @@
 from customtkinter import CTkFrame
-from views.components.toolbar_buttons_view import ViewModeSwitch, AddButton, FilterButton
+from views.components.toolbar_buttons import ViewModeSwitch, AddButton, FilterButton
 
 
 class WorkspaceToolbarView(CTkFrame):

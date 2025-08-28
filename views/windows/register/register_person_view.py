@@ -1,13 +1,13 @@
 from utils.gui import center_window
 from models.person_model import Person
-from views.windows.register.register_base_view import BaseWindowView
-from views.components.card_view import CardPessoa
-from views.components.forms_buttons.labeled_entry_view import LabeledEntryView
-from views.components.forms_buttons.labeled_combobox_view import SectorField
-from views.components.list_item_view import ListItemPessoa
+from views.windows.register.register_base_view import RegisterBaseWindowView
+from views.components.card import CardPessoa
+from views.components.forms_buttons.labeled_entry import LabeledEntryView
+from views.components.forms_buttons.labeled_combobox import SectorComboBox
+from views.components.list_item import ListItemPessoa
 
 
-class CadastroPessoaView(BaseWindowView):
+class RegisterPersonView(RegisterBaseWindowView):
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
         self.title("Cadastro de Pessoa")
@@ -20,7 +20,7 @@ class CadastroPessoaView(BaseWindowView):
         self.entries.update({
             "name": LabeledEntryView(self.main_frame, "Nome"),
             "role": LabeledEntryView(self.main_frame, "Cargo"),
-            "sector": SectorField(self.main_frame, "Setor"),
+            "sector": SectorComboBox(self.main_frame, "Setor"),
             "company": LabeledEntryView(self.main_frame, "Empresa")
         })
         self._build(self.entries)

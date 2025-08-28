@@ -1,7 +1,7 @@
 from customtkinter import CTkFrame, CTkButton, CTkToplevel
 
 
-class BaseWindowView(CTkToplevel):
+class RegisterBaseWindowView(CTkToplevel):
     def __init__(self, tab_info: dict, **kwargs):
         super().__init__(**kwargs)
         self.configure(fg_color="#2E333C")

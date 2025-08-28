@@ -1,9 +1,10 @@
 import customtkinter as ctk
 from PIL import Image
 
-from views.windows.register.register_person_view import CadastroPessoaView
-from views.windows.register.register_task_view import CadastroTarefaView
-from views.windows.register.register_sector_view import CadastroSetorView
+from views.windows.register.register_person_view import RegisterPersonView
+from views.windows.register.register_task_view import RegisterTaskView
+from views.windows.register.register_sector_view import RegisterSectorView
+from views.windows.distribution_view import DistributionView
 
 IMAGES_PATH = "C:/Users/luedu/Documents/Projetos/Pycharm/ProTasker/images/"
 
@@ -48,13 +49,13 @@ class AddButton(ToolbarBaseButtonView):
     def add(self):
         match self.tab_info["tab_name"]:
             case "Pessoas":
-                CadastroPessoaView(self.tab_info)
+                RegisterPersonView(self.tab_info)
             case "Tarefas":
-                CadastroTarefaView(self.tab_info)
+                RegisterTaskView(self.tab_info)
             case "Setores":
-                CadastroSetorView(self.tab_info)
+                RegisterSectorView(self.tab_info)
             case "Distribuições":
-                pass
+                DistributionView(self.tab_info)
 
 
 class FilterButton(ToolbarBaseButtonView):

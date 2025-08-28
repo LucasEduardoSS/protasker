@@ -1,6 +1,7 @@
 from peewee import Model, CharField, ForeignKeyField
 from database.db import database
 from models.sector_model import Sector
+from models.task_model import Task
 
 
 class Person(Model):
@@ -8,6 +9,7 @@ class Person(Model):
     role = CharField()
     sector = ForeignKeyField(Sector, backref='members', null=True)
     company = CharField(default="Sem empresa", null=True)
+    tasks = ForeignKeyField(Task, backref='responsible', null=True)
 
     class Meta:
         database = database

@@ -10,7 +10,7 @@ class ProTaskerView(CTk):
     def __init__(self):
         super().__init__()
         self.title("ProTasker")
-        self.geometry("1000x600")
+        self.geometry("1200x700")
         self.minsize(1000, 600)
 
         self.iconbitmap("images/protasker_icon.ico")
@@ -23,4 +23,4 @@ class ProTaskerView(CTk):
         self.configure(menu=self.main_meta["menu"])
 
         # agenda para rodar após o pack/layout
-        self.after(0, center_window(self, (1000, 600)))
+        self.after(0, center_window(self, (1200, 700)))

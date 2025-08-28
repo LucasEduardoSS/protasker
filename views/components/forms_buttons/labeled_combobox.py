@@ -3,6 +3,7 @@ import customtkinter as ctk
 from models.sector_model import Sector
 from models.task_model import Task
 
+
 class LabeledComboBox(ctk.CTkFrame):
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
@@ -27,7 +28,7 @@ class LabeledComboBox(ctk.CTkFrame):
             self.combo.configure(state="disabled")
 
 
-class SectorField(LabeledComboBox):
+class SectorComboBox(LabeledComboBox):
     def __init__(self, master, label, **kwargs):
         super().__init__(master, **kwargs)
         self._build(label, [s.name for s in Sector.select(Sector.name).order_by(Sector.name)])
@@ -40,7 +41,7 @@ class SectorField(LabeledComboBox):
         return Sector.get_or_none(Sector.name == name)
 
 
-class DependenciesField(LabeledComboBox):
+class TaskComboBox(LabeledComboBox):
     def __init__(self, master, label: str, **kwargs):
         super().__init__(master, **kwargs)
         self._build(label, [t.name for t in Task.select(Task.name).order_by(Task.name)])

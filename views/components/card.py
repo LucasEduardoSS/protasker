@@ -1,6 +1,6 @@
 import customtkinter as ctk
 
-from views.components.edit_button_view import EditButton
+from views.components.edit_button import EditButton
 from models.sector_model import Sector
 
 
@@ -74,6 +74,7 @@ class CardTarefa(CardView):
             "Tarefa": task_info["name"],
             "Descrição": task_info["description"],
             "Setor": Sector.get_by_id(task_info["sector"]).name if task_info["sector"] is not None else None,
+            "Empresa": task_info["company"],
             "Prioridade": task_info["priority"],
             "Status": "Pendente"
         }

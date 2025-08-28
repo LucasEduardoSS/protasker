@@ -1,13 +1,13 @@
 from utils.gui import center_window
 from models.task_model import Task
-from views.windows.register.register_base_view import BaseWindowView
-from views.components.card_view import CardTarefa
-from views.components.forms_buttons.labeled_entry_view import LabeledEntryView
-from views.components.forms_buttons.labeled_combobox_view import SectorField
-from views.components.list_item_view import ListItemTarefa
+from views.windows.register.register_base_view import RegisterBaseWindowView
+from views.components.card import CardTarefa
+from views.components.forms_buttons.labeled_entry import LabeledEntryView
+from views.components.forms_buttons.labeled_combobox import SectorComboBox
+from views.components.list_item import ListItemTarefa
 
 
-class CadastroTarefaView(BaseWindowView):
+class RegisterTaskView(RegisterBaseWindowView):
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
         self.title("Cadastro de Tarefa")
@@ -20,7 +20,8 @@ class CadastroTarefaView(BaseWindowView):
         self.entries.update({
             "name": LabeledEntryView(self.main_frame, "Nome"),
             "description": LabeledEntryView(self.main_frame, "Descrição"),
-            "sector": SectorField(self.main_frame, "Setor"),
+            "sector": SectorComboBox(self.main_frame, "Setor"),
+            "company": LabeledEntryView(self.main_frame, "Empresa"),
             "priority": LabeledEntryView(self.main_frame, "Prioridade", "Baixa, Média, Alta"),
             "dependencies": LabeledEntryView(self.main_frame, "Dependências"),
             "deadline": LabeledEntryView(self.main_frame, "Data limite", "dd/mm/aaaa")

@@ -1,5 +1,5 @@
 from customtkinter import CTkFrame, CTkLabel
-from views.components.edit_button_view import EditButton
+from views.components.edit_button import EditButton
 from models.sector_model import Sector
 
 
@@ -60,8 +60,10 @@ class ListItemTarefa(ListItemView):
         self._task_meta = {
             "Tarefa": task_info["name"],
             "Descrição": task_info["description"],
+            "Setor": Sector.get_by_id(task_info["sector"]).name if task_info["sector"] is not None else None,
             "Prioridade": task_info["priority"],
-            "Status": "Pendente"
+            "Status": "Pendente",
+            "Prazo": task_info["deadline"]
         }
 
         self.load_fields(self._task_meta)
