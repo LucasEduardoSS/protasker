@@ -13,3 +13,7 @@
 /views/__pycache__
 /views/workspace/containers/__pycache__
 /views/windows/register/__pycache__
+/dist/main/main.exe
+/dist
+/build
+main.spec
