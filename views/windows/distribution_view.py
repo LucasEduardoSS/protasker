@@ -56,7 +56,7 @@ class DistributionView(ctk.CTkToplevel):
         self.workspace.add(self.tasks, width=300)
 
         # Botão distribuir
-        self.generate_button = ProButton(self.main_frame, text="Distribuir", command=None)
+        self.generate_button = ProButton(self.main_frame, text="Distribuir", command=self._on_generate)
         self.generate_button.pack(side="top", anchor="e", pady=5)
 
         # Conectar callbacks que dependem da instância
@@ -75,6 +75,11 @@ class DistributionView(ctk.CTkToplevel):
         self.options.clean_filters()
         self.people.refresh()
         self.tasks.refresh()
+
+    def _on_generate(self):
+        print(self.options.get_distru_type())
+        print(self.people.get_selected_people())
+        print(self.tasks.get_selected_tasks())
 
 
 class OptionsView(ctk.CTkFrame):
@@ -130,6 +135,7 @@ class OptionsView(ctk.CTkFrame):
         self.complex.pack(side="top", anchor="w", padx=(10, 0), pady=4)
 
     def get_filters(self):
+        """Retorna os filtros selecionados."""
         return {
             "sector": self.sector_combobox.get(),
             "priority": self.priority_combobox.get(),
@@ -137,9 +143,14 @@ class OptionsView(ctk.CTkFrame):
         }
 
     def clean_filters(self):
+        """Limpa os filtros."""
         self.sector_combobox.set("Nenhum")
         self.priority_combobox.set("Nenhum")
         self.company_combobox.set("Nenhum")
+
+    def get_distru_type(self):
+        """Retorna o tipo de distribuição selecionada."""
+        return self.distru_type.get()
 
 
 class PeopleView(ctk.CTkFrame):
@@ -175,6 +186,10 @@ class PeopleView(ctk.CTkFrame):
                     continue
             item = ProCheckBox(self.people_list_view, text=person.name)
             item.pack(side="top", anchor="w", padx=10, pady=(10, 0), fill="x")
+
+    def get_selected_people(self):
+        """Retorna uma lista com as pessoas selecionadas."""
+        return [person for person in self.people_list_view.winfo_children()]
 
 
 class TasksView(ctk.CTkFrame):
@@ -212,3 +227,7 @@ class TasksView(ctk.CTkFrame):
                     continue
             item = ProCheckBox(self.tasks_list_view, text=task.name)
             item.pack(side="top", anchor="w", padx=10, pady=(10, 0), fill="x")
+
+    def get_selected_tasks(self):
+        """Retorna uma lista com as tarefas selecionadas."""
+        return [task for task in self.tasks_list_view.winfo_children()]

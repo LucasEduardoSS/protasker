@@ -40,6 +40,11 @@ class WorkspaceView(ttk.PanedWindow):
         self.workspace_tabs.add("Pessoas")
         self.workspace_tabs.add("Setores")
 
+        self.workspace_tabs.load_data("Distribuições")
+        self.workspace_tabs.load_data("Tarefas")
+        self.workspace_tabs.load_data("Pessoas")
+        self.workspace_tabs.load_data("Setores")
+
         # Ajustes finos do Workspace
         self.workspace_tabs.configure(corner_radius=0)
         self.workspace_tabs.grid_rowconfigure(2, minsize=0)

@@ -1,4 +1,4 @@
-from peewee import Model, CharField, ForeignKeyField
+from peewee import Model, CharField, ForeignKeyField, JOIN
 from database.db import database
 from models.sector_model import Sector
 from models.task_model import Task
@@ -14,3 +14,29 @@ class Person(Model):
     class Meta:
         database = database
         table_name = 'person'
+
+    def __str__(self):
+        return self.name
+
+    def __repr__(self):
+        return f"<Person: {self.name}>"
+
+    @staticmethod
+    def get_all():
+        """ Retorna uma lista com dicionários dos dados das pessoas."""
+        return Person.select()
+
+    @staticmethod
+    def get_all_dicts(order_by: bool = True):
+        """
+        Retorna uma lista de dicionários com os dados das pessoas.
+        - order_by: se True, ordena por nome.
+        """
+        query = (Person
+                 .select(Person, Sector.name.alias('sector_name'))
+                 .join(Sector, on=(Person.sector == Sector.id), join_type=JOIN.LEFT_OUTER))
+
+        if order_by:
+            query = query.order_by(Person.name)
+        return list(query.dicts())
+

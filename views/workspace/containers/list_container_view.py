@@ -1,5 +1,6 @@
 from customtkinter import CTkScrollableFrame
 
+from views.components.list_item import ListItem
 
 class ListContainer(CTkScrollableFrame):
     def __init__(self, master, **kwargs):
@@ -7,6 +8,12 @@ class ListContainer(CTkScrollableFrame):
 
         # Lista de itens
         self.list_items = []
+
+    def load_items(self, model: list):
+        """ Carrega itens ao container """
+        for item in model:
+            self.list_items.append(ListItem(self, item))
+        self.relayout()
 
     def add_item(self, item):
         """ Adiciona um novo item ao container """

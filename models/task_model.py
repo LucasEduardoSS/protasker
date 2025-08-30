@@ -1,4 +1,4 @@
-from peewee import Model, CharField, DateTimeField, ForeignKeyField
+from peewee import Model, CharField, DateTimeField, ForeignKeyField, JOIN
 from datetime import datetime
 
 from database.db import database
@@ -19,3 +19,27 @@ class Task(Model):
     class Meta:
         database = database
         table_name = 'tasks'
+
+    def __str__(self):
+        return self.name
+
+    def __repr__(self):
+        return f"<Task: {self.name}>"
+
+    @staticmethod
+    def get_all():
+        return Task.select()
+
+    @staticmethod
+    def get_all_dicts(order_by: bool = True):
+        """
+        Retorna uma lista de dicionários com os dados das pessoas.
+        - order_by: se True, ordena por nome.
+        """
+        query = (Task
+                 .select(Task, Sector.name.alias('sector_name'))
+                 .join(Sector, on=(Task.sector == Sector.id), join_type=JOIN.LEFT_OUTER))
+
+        if order_by:
+            query = query.order_by(Task.name)
+        return list(query.dicts())

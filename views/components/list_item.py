@@ -3,14 +3,16 @@ from views.components.edit_button import EditButton
 from models.sector_model import Sector
 
 
-class ListItemView(CTkFrame):
-    def __init__(self, master, **kwargs):
+class ListItem(CTkFrame):
+    def __init__(self, master, model_info: dict, **kwargs):
         super().__init__(master, **kwargs)
         self.configure(fg_color="#3E4D66", border_color="#777", height=30)
 
         # Botão de editar registro
         edit_button = EditButton(self, text="Editar")
         edit_button.pack(side="right", padx=(0, 5))
+
+        self.load_fields(model_info)
 
     def load_fields(self, fields: dict):
         for field in fields.items():
@@ -38,7 +40,7 @@ class ListItemView(CTkFrame):
     def toggle_filter_tab(self):
         pass
 
-class ListItemPessoa(ListItemView):
+class ListItemPessoa(ListItem):
     def __init__(self, master, person_info: dict, **kwargs):
         super().__init__(master, **kwargs)
 
@@ -52,7 +54,7 @@ class ListItemPessoa(ListItemView):
         self.load_fields(self._person_meta)
 
 
-class ListItemTarefa(ListItemView):
+class ListItemTarefa(ListItem):
     def __init__(self, master, task_info: dict, **kwargs):
         super().__init__(master, **kwargs)
 
@@ -69,7 +71,7 @@ class ListItemTarefa(ListItemView):
         self.load_fields(self._task_meta)
 
 
-class ListItemSetor(ListItemView):
+class ListItemSetor(ListItem):
     def __init__(self, master, sector_info: dict, **kwargs):
         super().__init__(master, **kwargs)
 

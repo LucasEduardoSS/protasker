@@ -1,9 +1,7 @@
 import customtkinter as ctk
 from PIL import Image
 
-from views.windows.register.register_person_view import RegisterPersonView
-from views.windows.register.register_task_view import RegisterTaskView
-from views.windows.register.register_sector_view import RegisterSectorView
+from views.windows.register_base_view import RegisterPersonView, RegisterTaskView, RegisterSectorView
 from views.windows.distribution_view import DistributionView
 
 IMAGES_PATH = "C:/Users/luedu/Documents/Projetos/Pycharm/ProTasker/images/"
@@ -120,10 +118,8 @@ class ViewModeSwitch(ctk.CTkSegmentedButton):
         if value == "Cards":
             self.tab_info["tab_meta"]["list_container"].pack_forget()
             self.tab_info["tab_meta"]["cards_container"].pack(fill="both", expand=True)
-            self.tab_info["tab_meta"]["cards_container"].relayout()
             self.tab_info["tab_meta"]["view_mode"] = "Cards"
         else:
             self.tab_info["tab_meta"]["cards_container"].pack_forget()
             self.tab_info["tab_meta"]["list_container"].pack(fill="both", expand=True)
-            self.tab_info["tab_meta"]["list_container"].relayout()
             self.tab_info["tab_meta"]["view_mode"] = "Lista"

@@ -1,4 +1,5 @@
 import customtkinter as ctk
+import queue, threading
 
 from database.db import database
 from models.person_model import Person
@@ -14,7 +15,8 @@ pro_tasker_view = ProTaskerView()
 
 if __name__ == "__main__":
     # Cria as tabelas
-    database.connect()
+    if database.is_closed():
+      database.connect()
     database.drop_tables([Person, Task, Sector])
     database.create_tables([Person, Task, Sector], safe=True)
     gen_sample_data()

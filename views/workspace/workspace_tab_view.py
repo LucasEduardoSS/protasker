@@ -4,6 +4,10 @@ from views.workspace.workspace_toolbar_view import WorkspaceToolbarView
 from views.workspace.containers.card_container_view import CardContainer
 from views.workspace.containers.list_container_view import ListContainer
 
+from models.person_model import Person
+from models.task_model import Task
+from models.sector_model import Sector
+
 
 class WorkspaceTabView(ctk.CTkTabview):
     def __init__(self, master, **kwargs):
@@ -74,3 +78,26 @@ class WorkspaceTabView(ctk.CTkTabview):
 
         # Constrói o container padrão
         toolbar.view_mode_switch.on_mode_change(self.tabs_meta[name]["view_mode"])
+
+        # Carrega os dados de cada tab
+        #self.load_data(name)
+
+    def load_data(self, tab_name: str = None):
+        """Carrega os dados de cada tab."""
+        data = []
+
+        match tab_name:
+            case "Pessoas":
+                data = Person.get_all_dicts(True)
+            case "Tarefas":
+                data = Task.get_all_dicts(True)
+            case "Setores":
+                data = Sector.get_all_dicts(True)
+            case "Distribuições":
+                #data = Distru.get_all_dicts(True)
+                pass
+
+        print(f"Carregando dados da tab {tab_name}")
+
+        self.tabs_meta[tab_name]["cards_container"].load_cards(data)
+        self.tabs_meta[tab_name]["list_container"].load_items(data)
