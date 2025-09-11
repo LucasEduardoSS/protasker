@@ -1,10 +1,20 @@
 import customtkinter as ctk
 from tkinter import PanedWindow
+
+# Functions
+from functions.distribution_algorithms import distribute_tasks_fair
 from utils.gui import center_window
+
+# Models
 from models.person_model import Person
 from models.task_model import Task
 from models.sector_model import Sector
-from views.components.pro_widgets import ProComboBox, ProCheckBox, ProRadioButton, ProButton
+
+# Views
+from views.components.pro_widgets import ProComboBox, ProCheckBox, ProButton
+from views.components.labeled_entry import LabeledEntryView
+from views.components.card import Card
+from views.components.list_item import ListItem
 
 
 class DistributionView(ctk.CTkToplevel):
@@ -15,10 +25,10 @@ class DistributionView(ctk.CTkToplevel):
         self.configure(fg_color="#2E333C")
         self.iconbitmap("images/protasker_icon.ico")
         self.title('Geração de Distribuição')
-        self.minsize(600, 300)
+        self.minsize(600, 400)
 
         # Centraliza a janela
-        center_window(self, (700, 400))
+        center_window(self, (650, 500))
 
         # Mantém sobre a janela principal
         self.grab_set()
@@ -31,6 +41,10 @@ class DistributionView(ctk.CTkToplevel):
         # Frame principal
         self.main_frame = ctk.CTkFrame(self, fg_color="transparent")
         self.main_frame.pack(padx=5, pady=5, fill="both", expand=True)
+
+        # Título da distribuição
+        self.distro_title = LabeledEntryView(self.main_frame, "Título", "Distribuição", fg_color="#2C2E33")
+        self.distro_title.pack(side="top", anchor="w", padx=(0, 10), pady=5, fill="x")
 
         # Área de trabalho
         self.workspace = PanedWindow(
@@ -51,13 +65,16 @@ class DistributionView(ctk.CTkToplevel):
         self.tasks = TasksView(self.workspace)
 
         # Adiciona as sessões na workspace
-        self.workspace.add(self.options, width=200)
-        self.workspace.add(self.people, width=300)
-        self.workspace.add(self.tasks, width=300)
+        self.workspace.add(self.options, width=200, padx=10)
+        self.workspace.add(self.people, width=250)
+        self.workspace.add(self.tasks, width=250, padx=10)
 
         # Botão distribuir
         self.generate_button = ProButton(self.main_frame, text="Distribuir", command=self._on_generate)
-        self.generate_button.pack(side="top", anchor="e", pady=5)
+        self.generate_button.pack(side="top", anchor="e", padx=(0, 10), pady=5)
+
+        self.message = ctk.CTkLabel(self.main_frame, text="Títule a distribuição e selecione as pessoas e tarefas", font=("Tahoma", 11))
+        self.message.pack(side="top", anchor="w", padx=5, pady=0)
 
         # Conectar callbacks que dependem da instância
         self.options.sector_combobox.configure(command=self._on_filters_changed)
@@ -77,9 +94,28 @@ class DistributionView(ctk.CTkToplevel):
         self.tasks.refresh()
 
     def _on_generate(self):
-        print(self.options.get_distru_type())
-        print(self.people.get_selected_people())
-        print(self.tasks.get_selected_tasks())
+        """Gera a distribuição de tarefas."""
+        if len(self.people.get_selected_people()) == 0 or len(self.tasks.get_selected_tasks()) == 0:
+            self.message.configure(text="Selecione pelo menos uma pessoa e uma tarefa para distribuir.")
+            return
+
+        if self.distro_title.get() == "":
+            self.message.configure(text="Defina um título para distribuição.")
+            return
+
+        distro = distribute_tasks_fair(self.people.get_selected_people(), self.tasks.get_selected_tasks())
+
+        distro_info = {
+            "title": self.distro_title.get(),
+            "total_tasks": len(self.tasks.get_selected_tasks()),
+            "finished_tasks": 0,
+        }
+
+        item = ListItem(self.tab_info["tab_meta"]["list_container"], distro_info)
+        self.tab_info["tab_meta"]["list_container"].add_item(item)
+
+        card = Card(self.tab_info["tab_meta"]["cards_container"], distro_info)
+        self.tab_info["tab_meta"]["cards_container"].add_card(card)
 
 
 class OptionsView(ctk.CTkFrame):
@@ -87,7 +123,11 @@ class OptionsView(ctk.CTkFrame):
         super().__init__(parent, **kwargs)
 
         # Configurações
-        self.configure(fg_color="transparent", corner_radius=0)
+        self.configure(
+            fg_color="transparent",
+            corner_radius=0
+        )
+
         self.pack_propagate(False)
 
         # Dados
@@ -123,17 +163,6 @@ class OptionsView(ctk.CTkFrame):
         self.clean_button = ProButton(self, text="Limpar filtros", height=15, command=self.clean_filters)
         self.clean_button.pack(side="top", anchor="e", padx=5, pady=(10, 0), fill="x")
 
-        # Distribuições
-        self.distru_types = ctk.CTkLabel(self, text="Distribuição", font=("Tahoma", 11), anchor="w")
-        self.distru_types.pack(side="top", anchor="w", pady=(10, 2))
-        self.distru_type = ctk.StringVar(value="simple")
-
-        self.simple = ProRadioButton(self, text="Simples", variable=self.distru_type, value="simple", command=None)
-        self.simple.pack(side="top", anchor="w", padx=(10, 0), pady=4)
-
-        self.complex = ProRadioButton(self, text="Complexa", variable=self.distru_type, value="complex", command=None)
-        self.complex.pack(side="top", anchor="w", padx=(10, 0), pady=4)
-
     def get_filters(self):
         """Retorna os filtros selecionados."""
         return {
@@ -148,17 +177,16 @@ class OptionsView(ctk.CTkFrame):
         self.priority_combobox.set("Nenhum")
         self.company_combobox.set("Nenhum")
 
-    def get_distru_type(self):
-        """Retorna o tipo de distribuição selecionada."""
-        return self.distru_type.get()
-
 
 class PeopleView(ctk.CTkFrame):
     def __init__(self, parent, **kwargs):
         super().__init__(parent, **kwargs)
 
         # Configurações
-        self.configure(fg_color="transparent", corner_radius=0)
+        self.configure(
+            fg_color="transparent",
+            corner_radius=0
+        )
 
         # Pessoas
         self.people_label = ctk.CTkLabel(self, text="Pessoas", font=("Tahoma", 11), anchor="w")
@@ -166,7 +194,8 @@ class PeopleView(ctk.CTkFrame):
 
         # Lista de pessoas
         self.people_list = Person.select()
-        self.people_list_view = ctk.CTkScrollableFrame(self, corner_radius=0, fg_color="#2C2E33")
+        self.people_list_view = ctk.CTkScrollableFrame(self, corner_radius=5, fg_color="#2C2E33", border_width=1, border_color="#777")
+        self.people_list_view._scrollbar.grid_configure(padx=5)
         self.people_list_view.pack(side="top", fill="both", expand=True)
 
         # Carrega sem filtro inicialmente
@@ -177,6 +206,9 @@ class PeopleView(ctk.CTkFrame):
         for child in self.people_list_view.winfo_children():
             child.destroy()
 
+        self.select_all = ProCheckBox(self.people_list_view, text="Selecionar todos", command=self.select_all_people)
+        self.select_all.pack(side="top", anchor="w", padx=5, pady=(5, 0), fill="x")
+
         # Carrega a lista de pessoas com filtros
         for person in self.people_list:
             if filter_by:
@@ -185,11 +217,27 @@ class PeopleView(ctk.CTkFrame):
                 if filter_by["company"] != "Nenhum" and filter_by["company"].lower() != person.company.lower():
                     continue
             item = ProCheckBox(self.people_list_view, text=person.name)
-            item.pack(side="top", anchor="w", padx=10, pady=(10, 0), fill="x")
+            item.pack(side="top", anchor="w", padx=5, pady=(5, 0), fill="x")
+
+    def select_all_people(self):
+        for person in self.people_list_view.winfo_children():
+            if person.cget("text") == "Selecionar todos":
+                continue
+            if self.select_all.get() == 0:
+                person.deselect()
+            else:
+                person.select()
 
     def get_selected_people(self):
         """Retorna uma lista com as pessoas selecionadas."""
-        return [person for person in self.people_list_view.winfo_children()]
+        selected_people = []
+        for person in self.people_list_view.winfo_children():
+            if person.cget("text") == "Selecionar todos":
+                continue
+            if person.get() == 1:
+                selected_people.append(Person.get_by_name(person.cget("text")))
+
+        return selected_people
 
 
 class TasksView(ctk.CTkFrame):
@@ -197,7 +245,10 @@ class TasksView(ctk.CTkFrame):
         super().__init__(parent, **kwargs)
 
         # Configurações
-        self.configure(fg_color="transparent", corner_radius=0)
+        self.configure(
+            fg_color="transparent",
+            corner_radius=0
+        )
 
         # Tarefas
         self.tasks_label = ctk.CTkLabel(self, text="Tarefas", font=("Tahoma", 11), anchor="w")
@@ -205,7 +256,8 @@ class TasksView(ctk.CTkFrame):
 
         # Lista de tarefas
         self.tasks_list = Task.select()
-        self.tasks_list_view = ctk.CTkScrollableFrame(self, corner_radius=0, fg_color="#2C2E33")
+        self.tasks_list_view = ctk.CTkScrollableFrame(self, corner_radius=5, fg_color="#2C2E33", border_width=1, border_color="#777")
+        self.tasks_list_view._scrollbar.grid_configure(padx=5)
         self.tasks_list_view.pack(side="top", fill="both", expand=True)
 
         # Carrega sem filtro inicialmente
@@ -215,6 +267,9 @@ class TasksView(ctk.CTkFrame):
         # Limpa a lista de tarefas
         for child in self.tasks_list_view.winfo_children():
             child.destroy()
+
+        self.select_all = ProCheckBox(self.tasks_list_view, text="Selecionar todos", command=self.select_all_tasks)
+        self.select_all.pack(side="top", anchor="w", padx=5, pady=(5, 0), fill="x")
 
         # Carrega a lista de tarefas com filtros
         for task in self.tasks_list:
@@ -226,8 +281,24 @@ class TasksView(ctk.CTkFrame):
                 if filter_by["company"] != "Nenhum" and filter_by["company"].lower() != task.company.lower():
                     continue
             item = ProCheckBox(self.tasks_list_view, text=task.name)
-            item.pack(side="top", anchor="w", padx=10, pady=(10, 0), fill="x")
+            item.pack(side="top", anchor="w", padx=5, pady=(5, 0), fill="x")
+
+    def select_all_tasks(self):
+        for task in self.tasks_list_view.winfo_children():
+            if task.cget("text") == "Selecionar todos":
+                continue
+            if self.select_all.get() == 0:
+                task.deselect()
+            else:
+                task.select()
 
     def get_selected_tasks(self):
         """Retorna uma lista com as tarefas selecionadas."""
-        return [task for task in self.tasks_list_view.winfo_children()]
+        selected_tasks = []
+        for task in self.tasks_list_view.winfo_children():
+            if task.cget("text") == "Selecionar todos":
+                continue
+            if task.get() == 1:
+                selected_tasks.append(Task.get_by_name(task.cget("text")))
+
+        return selected_tasks

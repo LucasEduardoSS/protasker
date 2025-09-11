@@ -1,6 +1,7 @@
 import customtkinter as ctk
 
 from views.components.edit_button import EditButton
+from utils.format_card_info import format_card_info
 
 
 class Card(ctk.CTkFrame):
@@ -39,7 +40,7 @@ class Card(ctk.CTkFrame):
 
         # Carrega os campos, se fornecido
         if model_info is not None:
-            self.load_fields(model_info)
+            self.load_fields(format_card_info(model_info))
 
     def load_fields(self, fields: dict):
         """Carrega os campos do card com os dados do registro."""
@@ -55,6 +56,9 @@ class Card(ctk.CTkFrame):
         for key, value in fields.items():
             # Ignora campos com valores vazios
             if value is None or value == "":
+                continue
+
+            if key == "id":
                 continue
 
             # Nome do campo

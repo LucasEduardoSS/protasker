@@ -80,7 +80,7 @@ class WorkspaceTabView(ctk.CTkTabview):
         toolbar.view_mode_switch.on_mode_change(self.tabs_meta[name]["view_mode"])
 
         # Carrega os dados de cada tab
-        #self.load_data(name)
+        self.load_data(name)
 
     def load_data(self, tab_name: str = None):
         """Carrega os dados de cada tab."""
@@ -89,15 +89,16 @@ class WorkspaceTabView(ctk.CTkTabview):
         match tab_name:
             case "Pessoas":
                 data = Person.get_all_dicts(True)
+                self.tabs_meta[tab_name]["model"] = Person
             case "Tarefas":
                 data = Task.get_all_dicts(True)
+                self.tabs_meta[tab_name]["model"] = Task
             case "Setores":
                 data = Sector.get_all_dicts(True)
+                self.tabs_meta[tab_name]["model"] = Sector
             case "Distribuições":
                 #data = Distru.get_all_dicts(True)
                 pass
-
-        print(f"Carregando dados da tab {tab_name}")
 
         self.tabs_meta[tab_name]["cards_container"].load_cards(data)
         self.tabs_meta[tab_name]["list_container"].load_items(data)

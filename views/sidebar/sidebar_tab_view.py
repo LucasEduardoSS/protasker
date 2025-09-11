@@ -1,7 +1,7 @@
 import customtkinter as ctk
-from views.sidebar.first_steps_tab_view import FirstStepsTabView
-from views.sidebar.control_tab_view import ControlTabView
-from views.sidebar.details_tab_view import DetailsTabView
+from views.sidebar.tabs.first_steps_tab_view import FirstStepsTabView
+from views.sidebar.tabs.control_tab_view import ControlTabView
+from views.sidebar.tabs.details_tab_view import DetailsTabView
 
 class SidebarTabView(ctk.CTkFrame):
     def __init__(self, master, **kwargs):

@@ -27,6 +27,11 @@ class Person(Model):
         return Person.select()
 
     @staticmethod
+    def get_by_name(name: str):
+        """ Retorna a instância de Person com o nome informado. """
+        return Person.get_or_none(Person.name == name)
+
+    @staticmethod
     def get_all_dicts(order_by: bool = True):
         """
         Retorna uma lista de dicionários com os dados das pessoas.

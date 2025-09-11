@@ -2,7 +2,6 @@
 - Menus
 - Comando para botão de editar registros
 - Funções de distribuição de tarefas
-- Carregamento de cards e itens na inicialização
 - Tab de controle da sidebar
 - Tab de detalhes da sidebar
 
@@ -10,5 +9,4 @@
 
 - Criar um sistema de busca dentro da tab de registros
 - Tab da sidebar para visualizar árvore de tarefas
-- Remover as classes derivadas de CardView e ListItemView
 - Adicionar imagens na tab 'primeiros-passos' da sidebar

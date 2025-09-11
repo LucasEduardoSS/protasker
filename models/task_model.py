@@ -1,4 +1,4 @@
-from peewee import Model, CharField, DateTimeField, ForeignKeyField, JOIN
+from peewee import Model, CharField, DateTimeField, ForeignKeyField, JOIN, IntegerField
 from datetime import datetime
 
 from database.db import database
@@ -9,10 +9,11 @@ class Task(Model):
     description = CharField(default="Sem descrição")
     sector = ForeignKeyField(Sector, backref='tasks', null=True)
     company = CharField(default="Sem empresa", null=True)
+    weight = IntegerField(default=0)
     priority = CharField()
     dependencies = CharField(default="Nenhuma", null=True)
     creation_date = DateTimeField(default=datetime.now)
-    forecast_date = DateTimeField(default=None, null=True)
+    deadline = DateTimeField(default=None, null=True)
     closure_date = DateTimeField(default=None, null=True)
     status = CharField(default="Pendente")
 
@@ -29,6 +30,10 @@ class Task(Model):
     @staticmethod
     def get_all():
         return Task.select()
+
+    @staticmethod
+    def get_by_name(name: str):
+        return Task.get_or_none(Task.name == name)
 
     @staticmethod
     def get_all_dicts(order_by: bool = True):

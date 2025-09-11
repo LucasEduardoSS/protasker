@@ -1,6 +1,7 @@
 from customtkinter import CTkFrame, CTkLabel
+
 from views.components.edit_button import EditButton
-from models.sector_model import Sector
+from utils.format_card_info import format_card_info
 
 
 class ListItem(CTkFrame):
@@ -12,9 +13,10 @@ class ListItem(CTkFrame):
         edit_button = EditButton(self, text="Editar")
         edit_button.pack(side="right", padx=(0, 5))
 
-        self.load_fields(model_info)
+        self.load_fields(format_card_info(model_info))
 
     def load_fields(self, fields: dict):
+        """Carrega os campos do card com os dados do registro."""
         for field in fields.items():
             # Ignora campos vazios
             if field[1] is None:
@@ -39,44 +41,3 @@ class ListItem(CTkFrame):
 
     def toggle_filter_tab(self):
         pass
-
-class ListItemPessoa(ListItem):
-    def __init__(self, master, person_info: dict, **kwargs):
-        super().__init__(master, **kwargs)
-
-        self._person_meta = {
-            "Nome": person_info["name"],
-            "Cargo": person_info["role"],
-            "Setor": Sector.get_by_id(person_info["sector"]).name if person_info["sector"] is not None else None,
-            "Empresa": person_info["company"]
-        }
-
-        self.load_fields(self._person_meta)
-
-
-class ListItemTarefa(ListItem):
-    def __init__(self, master, task_info: dict, **kwargs):
-        super().__init__(master, **kwargs)
-
-        # Atributos da tarefa
-        self._task_meta = {
-            "Tarefa": task_info["name"],
-            "Descrição": task_info["description"],
-            "Setor": Sector.get_by_id(task_info["sector"]).name if task_info["sector"] is not None else None,
-            "Prioridade": task_info["priority"],
-            "Status": "Pendente",
-            "Prazo": task_info["deadline"]
-        }
-
-        self.load_fields(self._task_meta)
-
-
-class ListItemSetor(ListItem):
-    def __init__(self, master, sector_info: dict, **kwargs):
-        super().__init__(master, **kwargs)
-
-        self._sector_meta = {
-            "Setor": sector_info["name"]
-        }
-
-        self.load_fields(self._sector_meta)

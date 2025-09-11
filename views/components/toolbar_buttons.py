@@ -1,7 +1,7 @@
 import customtkinter as ctk
 from PIL import Image
 
-from views.windows.register_base_view import RegisterPersonView, RegisterTaskView, RegisterSectorView
+from views.windows.register_view import RegisterPersonView, RegisterTaskView, RegisterSectorView
 from views.windows.distribution_view import DistributionView
 
 IMAGES_PATH = "C:/Users/luedu/Documents/Projetos/Pycharm/ProTasker/images/"

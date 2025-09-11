@@ -1,5 +1,5 @@
 from customtkinter import CTkFrame, CTkLabel
-from views.sidebar.sidebar_base_tab_view import SidebarBaseTabView
+from views.sidebar.tabs.sidebar_base_tab_view import SidebarBaseTabView
 
 
 class FirstStepsTabView(SidebarBaseTabView):

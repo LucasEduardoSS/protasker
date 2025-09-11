@@ -17,6 +17,9 @@ class ModelForm(ctk.CTkFrame):
             if field.primary_key:
                 continue
 
+            if field.foreign_key:
+                continue
+
             # Label
             lbl = ctk.CTkLabel(self, text=name.replace("_", " ").title(), font=("Tahoma", 11))
             lbl.grid(row=row, column=0, sticky="e", padx=5, pady=5)

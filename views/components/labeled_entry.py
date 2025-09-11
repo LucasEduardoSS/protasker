@@ -7,8 +7,20 @@ class LabeledEntryView(ctk.CTkFrame):
 
         self.configure(fg_color="transparent", corner_radius=0)
 
-        self.label = ctk.CTkLabel(self, text=label, font=("Tahoma", 11), anchor="e")
-        self.entry = ctk.CTkEntry(self, placeholder_text=placeholder if placeholder != "" else label, font=("Tahoma", 11), fg_color="transparent")
+        self.label = ctk.CTkLabel(
+            self,
+            text=label,
+            font=("Tahoma", 11),
+            anchor="e"
+        )
+
+        self.entry = ctk.CTkEntry(
+            self,
+            placeholder_text=placeholder if placeholder != "" else label,
+            font=("Tahoma", 11),
+            fg_color="transparent",
+            border_color="#777"
+        )
 
         self.label.pack(side="left", padx=(10, 0))
         self.entry.pack(side="right", fill="x", expand=True, padx=(10, 0))

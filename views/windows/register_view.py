@@ -3,8 +3,10 @@ from customtkinter import CTkFrame, CTkButton, CTkToplevel
 from utils.gui import center_window
 from views.components.card import Card
 from views.components.list_item import ListItem
-from views.components.forms_buttons.labeled_entry import LabeledEntryView
-from views.components.forms_buttons.labeled_combobox import SectorComboBox
+from views.components.labeled_entry import LabeledEntryView
+from views.components.labeled_combobox import LabeledComboBox
+
+from models.sector_model import Sector
 
 
 class RegisterBaseWindowView(CTkToplevel):
@@ -25,6 +27,7 @@ class RegisterBaseWindowView(CTkToplevel):
         self.tab_info = tab_info
         self.entries = {}
         self.data = None
+        self.model = self.tab_info["tab_meta"]["model"]
 
     def _build(self, entries: dict):
         # Posiciona os campos
@@ -42,7 +45,7 @@ class RegisterBaseWindowView(CTkToplevel):
            data[name] = widget.get()
         return data
 
-    def _on_save(self, model=None):
+    def _on_save(self):
         self.data = self.get_data()
 
         # Cria um card
@@ -53,8 +56,12 @@ class RegisterBaseWindowView(CTkToplevel):
         list_item = ListItem(self.tab_info["tab_meta"]["list_container"], self.data)
         self.tab_info["tab_meta"]["list_container"].add_item(list_item)
 
-        # Registra no banco de dados
-        model.create(**self.data)
+        # Registra no banco de dados (somente se houver model válido)
+        if self.model is not None:
+            self.model.create(**self.data)
+        else:
+            # Caso o model não tenha sido injetado, evita crash e informa no console
+            print("Aviso: nenhum 'model' foi fornecido em tab_info; dados não foram persistidos.")
 
         # fecha a janela ou limpa campos
         self.destroy()
@@ -73,8 +80,9 @@ class RegisterTaskView(RegisterBaseWindowView):
         self.entries.update({
             "name": LabeledEntryView(self.main_frame, "Nome"),
             "description": LabeledEntryView(self.main_frame, "Descrição"),
-            "sector": SectorComboBox(self.main_frame, "Setor"),
+            "sector": LabeledComboBox(self.main_frame, "Setor", Sector),
             "company": LabeledEntryView(self.main_frame, "Empresa"),
+            "weight": LabeledEntryView(self.main_frame, "Peso"),
             "priority": LabeledEntryView(self.main_frame, "Prioridade", "Baixa, Média, Alta"),
             "dependencies": LabeledEntryView(self.main_frame, "Dependências"),
             "deadline": LabeledEntryView(self.main_frame, "Data limite", "dd/mm/aaaa")
@@ -95,7 +103,7 @@ class RegisterPersonView(RegisterBaseWindowView):
         self.entries.update({
             "name": LabeledEntryView(self.main_frame, "Nome"),
             "role": LabeledEntryView(self.main_frame, "Cargo"),
-            "sector": SectorComboBox(self.main_frame, "Setor"),
+            "sector": LabeledComboBox(self.main_frame, "Setor", Sector),
             "company": LabeledEntryView(self.main_frame, "Empresa")
         })
         self._build(self.entries)
