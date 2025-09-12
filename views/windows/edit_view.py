@@ -1,12 +1,19 @@
-from customtkinter import CTkFrame, CTkButton, CTkToplevel
+from customtkinter import CTkToplevel
 
-from views.components.card import Card
-from views.components.list_item import ListItem
+from views.windows.model_form import ModelForm
 
 
 class EditBaseWindowView(CTkToplevel):
-    def __init__(self, tab_info: dict, **kwargs):
+    def __init__(self, model, model_info: dict, **kwargs):
+
+        # Inicializa a classe pai
         super().__init__(**kwargs)
+
+        # Atributos
+        self.entries = {}
+        self.data = None
+
+        # Configuração da janela
         self.configure(fg_color="#2E333C")
         self.iconbitmap("images/protasker_icon.ico")
 
@@ -16,40 +23,14 @@ class EditBaseWindowView(CTkToplevel):
         self.focus_force()
 
         # Frame principal
-        self.main_frame = CTkFrame(self, fg_color="transparent")
+        self.main_frame = ModelForm(self, model, model_info)
         self.main_frame.pack(padx=5, pady=5, fill="both", expand=True)
 
-        self.tab_info = tab_info
-        self.entries = {}
-        self.data = None
-        self.model = self.tab_info["tab_meta"]["model"]
-
-    def _build(self, entries: dict):
-        # Posiciona os campos
-        for widget in entries.values():
-            widget.pack(side="top", anchor="nw", fill="x", padx=10, pady=5)
-
-        # Botão de salvar
-        btn = CTkButton(self, height=30, text="Salvar", font=("Tahoma", 11), command=self._on_save)
-        btn.pack(side="top", anchor="s", padx=10, pady=10, fill="x", expand=True)
-
-    def get_data(self) -> dict:
-        """Retorna um dict com os valores atuais do formulário."""
-        data = {}
-        for name, widget in self.entries.items():
-           data[name] = widget.get()
-        return data
-
     def _on_save(self):
-        self.data = self.get_data()
+        """Atualiza os dados no banco de dados e fecha a janela."""
+        self.data = self.main_frame.get_data()
 
-        # Cria um card
-        card = Card(self.tab_info["tab_meta"]["cards_container"], self.data)
-        self.tab_info["tab_meta"]["cards_container"].add_card(card)
-
-        # Cria um item na lista
-        list_item = ListItem(self.tab_info["tab_meta"]["list_container"], self.data)
-        self.tab_info["tab_meta"]["list_container"].add_item(list_item)
+        # Recarrega os registros
 
         # Registra no banco de dados (somente se houver model válido)
         if self.model is not None:

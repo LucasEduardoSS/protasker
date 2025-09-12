@@ -1,10 +1,12 @@
-from peewee import Model, CharField, DateTimeField, ForeignKeyField, JOIN, IntegerField
+from peewee import CharField, DateTimeField, ForeignKeyField, JOIN, IntegerField
 from datetime import datetime
 
 from database.db import database
+from models.base_model import BaseModel
 from models.sector_model import Sector
 
-class Task(Model):
+
+class Task(BaseModel):
     name = CharField()
     description = CharField(default="Sem descrição")
     sector = ForeignKeyField(Sector, backref='tasks', null=True)
@@ -26,10 +28,6 @@ class Task(Model):
 
     def __repr__(self):
         return f"<Task: {self.name}>"
-
-    @staticmethod
-    def get_all():
-        return Task.select()
 
     @staticmethod
     def get_by_name(name: str):

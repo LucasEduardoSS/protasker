@@ -1,12 +1,17 @@
 import customtkinter as ctk
 
 from views.components.edit_button import EditButton
+from views.windows.edit_view import EditBaseWindowView
 from utils.format_card_info import format_card_info
 
 
 class Card(ctk.CTkFrame):
     def __init__(self, master, model_info: dict | None = None, **kwargs):
         super().__init__(master, **kwargs)
+
+        # Informações do card
+        self.model_info = model_info
+        self.model = master.model
 
         # Configuração do card
         self._normal_fg = "#3E4D66"
@@ -28,7 +33,7 @@ class Card(ctk.CTkFrame):
         self.grid_propagate(False)
 
         # Botão de editar registro
-        edit_button = EditButton(self, text="")
+        edit_button = EditButton(self, text="", command=self.edit_card)
         edit_button.grid(row=0, column=1, padx=5, pady=5, sticky="n")
 
         # Hover leve (evita mudança contínua em <Motion>)
@@ -58,6 +63,7 @@ class Card(ctk.CTkFrame):
             if value is None or value == "":
                 continue
 
+            # Ignora o ID
             if key == "id":
                 continue
 
@@ -86,4 +92,5 @@ class Card(ctk.CTkFrame):
             lb.pack(side="top", anchor="w", padx=5, pady=4, fill="x", expand=True)
 
     def edit_card(self):
+        EditBaseWindowView(self.model, self.model_info)
         pass

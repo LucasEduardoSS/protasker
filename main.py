@@ -2,6 +2,7 @@ import customtkinter as ctk
 import queue, threading
 
 from database.db import database
+from models.distribution_model import Distribution
 from models.person_model import Person
 from models.task_model import Task
 from models.sector_model import Sector
@@ -17,8 +18,8 @@ if database.is_closed():
   database.connect()
 
 # Cria as tabelas
-database.drop_tables([Person, Task, Sector, Assignment])
-database.create_tables([Person, Task, Sector, Assignment], safe=True)
+database.drop_tables([Person, Task, Sector, Distribution, Assignment])
+database.create_tables([Person, Task, Sector, Distribution, Assignment], safe=True)
 
 # Gera dados de exemplo
 gen_sample_data()

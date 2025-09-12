@@ -10,8 +10,8 @@ class LabeledComboBox(ctk.CTkFrame):
         model_values: list = [model.name for model in model.select()]
 
         # Rótulo
-        label = ctk.CTkLabel(self, text=label, font=("Tahoma", 11), anchor="e")
-        label.pack(side="left", padx=(10,0))
+        self.label = ctk.CTkLabel(self, text=label, font=("Tahoma", 11), anchor="e")
+        self.label.pack(side="left", padx=(10,0))
 
         # Botão de adicionar um registro
         self.add_sector_button = ctk.CTkButton(self, width=25, text="+", font=("Tahoma", 11), command=None)

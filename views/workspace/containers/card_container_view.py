@@ -2,8 +2,9 @@ import customtkinter as ctk
 
 from views.components.card import Card
 
+
 class CardContainer(ctk.CTkScrollableFrame):
-    def __init__(self, master, card_w=160, card_h=250, pad_x=4, pad_y=4, **kwargs):
+    def __init__(self, master, model, card_w=160, card_h=250, pad_x=4, pad_y=4, **kwargs):
         super().__init__(master, **kwargs)
 
         self.card_w = card_w
@@ -13,6 +14,9 @@ class CardContainer(ctk.CTkScrollableFrame):
 
         # Guarda os cards do container
         self.cards = []
+
+        # Modelo
+        self.model = model
 
         # Recalcula layout sempre que o container muda de largura
         self._relayout_after_id = None

@@ -4,10 +4,6 @@ from views.workspace.workspace_toolbar_view import WorkspaceToolbarView
 from views.workspace.containers.card_container_view import CardContainer
 from views.workspace.containers.list_container_view import ListContainer
 
-from models.person_model import Person
-from models.task_model import Task
-from models.sector_model import Sector
-
 
 class WorkspaceTabView(ctk.CTkTabview):
     def __init__(self, master, **kwargs):
@@ -36,14 +32,18 @@ class WorkspaceTabView(ctk.CTkTabview):
         # Metadados por tab
         self.tabs_meta = {}  # name -> dict
 
-    def add(self, name, **kwargs):
+    def add(self, name, model=None, **kwargs):
+        """Adiciona uma nova tab ao CTkTabview."""
+
         # Cria a tab padrão do CTkTabview
         super().add(name)
-        tab = self.tab(name)  # Pessoas, Tarefas, Setores e Distribuições
+
+        tab = self.tab(name)
 
         # Guarda metadados da tab
         self.tabs_meta[name] = {
             "tab": tab,
+            "model": model,
             "toolbar": None,
             "toolbar_left": None,
             "toolbar_right": None,
@@ -62,7 +62,7 @@ class WorkspaceTabView(ctk.CTkTabview):
         content.pack(side="top", pady=(10, 0), fill="both", expand=True)
 
         # Containers para modos de visualização
-        cards_container = CardContainer(content, fg_color="transparent")
+        cards_container = CardContainer(content, model, fg_color="transparent")
         list_container = ListContainer(content, fg_color="transparent")
 
         # Guarda metadados da tab
@@ -84,21 +84,7 @@ class WorkspaceTabView(ctk.CTkTabview):
 
     def load_data(self, tab_name: str = None):
         """Carrega os dados de cada tab."""
-        data = []
-
-        match tab_name:
-            case "Pessoas":
-                data = Person.get_all_dicts(True)
-                self.tabs_meta[tab_name]["model"] = Person
-            case "Tarefas":
-                data = Task.get_all_dicts(True)
-                self.tabs_meta[tab_name]["model"] = Task
-            case "Setores":
-                data = Sector.get_all_dicts(True)
-                self.tabs_meta[tab_name]["model"] = Sector
-            case "Distribuições":
-                #data = Distru.get_all_dicts(True)
-                pass
+        data = self.tabs_meta[tab_name]["model"].get_all_dicts(True)
 
         self.tabs_meta[tab_name]["cards_container"].load_cards(data)
         self.tabs_meta[tab_name]["list_container"].load_items(data)

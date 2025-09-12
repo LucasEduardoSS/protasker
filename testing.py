@@ -18,28 +18,34 @@ class App(ctk.CTk):
         frame = ctk.CTkFrame(self)
         frame.pack(fill="both", expand=True)
 
-        self.card = ctk.CTkFrame(frame, width=200, height=200, corner_radius=10, fg_color="blue")
-        self.card.pack(anchor="center", side="top", pady=(20, 0))
-        self.card.bind("<Enter>", lambda e: card.configure(fg_color="red", height=300))
-        self.card.bind("<Leave>", lambda e: card.configure(fg_color="blue", height=200))
-        self.card.pack_propagate(False)
+        #self.card = ctk.CTkFrame(frame, width=200, height=200, corner_radius=10, fg_color="blue")
+        #self.card.pack(anchor="center", side="top", pady=(20, 0))
+        #self.card.bind("<Enter>", lambda e: card.configure(fg_color="red", height=300))
+        #self.card.bind("<Leave>", lambda e: card.configure(fg_color="blue", height=200))
+        #self.card.pack_propagate(False)
 
-        self.field = ctk.CTkFrame(card, height=15, fg_color="green")
-        self.field.pack(side="top", anchor="center", padx=10, pady=10)
-        self.field.bind("<Enter>", self.edit_field)
-        self.field.bind("<Map>", lambda e: print("Map", e))
+        #self.field = ctk.CTkFrame(card, height=15, fg_color="green")
+        #self.field.pack(side="top", anchor="center", padx=10, pady=10)
+        #self.field.bind("<Enter>", self.edit_field)
+        #self.field.bind("<Map>", lambda e: print("Map", e))
 
         #entry = ctk.CTkEntry(card, placeholder_text="Placeholder text")
         #entry.pack(padx=10, pady=10)
         #entry.bind("<FocusIn>", lambda e: print("Focused"))
 
-        button = ctk.CTkButton(self)
-        button.pack()
-        button.bind("<Button-1>", lambda e: print("Button clicked"))
+        #button = ctk.CTkButton(self)
+        #button.pack()
+        #button.bind("<Button-1>", lambda e: print("Button clicked"))
+
+        dict1 = {"a": 1, "b": 2, "c": 3}
+        i = 0
+        for i in range(len(dict1)):
+            pass
+
 
     def edit_field(e):
         print(e)
-        self.card.configure(fg_color="red", height=300)
+        #self.card.configure(fg_color="red", height=300)
         print("Edit field")
 
 
