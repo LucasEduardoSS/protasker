@@ -1,4 +1,5 @@
 from customtkinter import CTkFrame
+
 from views.components.toolbar_buttons import ViewModeSwitch, AddButton, FilterButton
 
 
@@ -36,6 +37,7 @@ class WorkspaceToolbarView(CTkFrame):
         self.toolbar_right = CTkFrame(self, fg_color="transparent")
         self.toolbar_right.pack(side="right", padx=2, pady=2, anchor="w")
 
-        self.add = AddButton(self.toolbar_left, tab_info=self.tab_info)
-        self.filter = FilterButton(self.toolbar_left, tab_info=self.tab_info)
-        self.view_mode_switch = ViewModeSwitch(self.toolbar_right, tab_info=self.tab_info)
+        # Botões
+        self.add_btn = AddButton(self.toolbar_left)
+        self.filter_btn = FilterButton(self.toolbar_left)
+        self.view_mode_switch_btn = ViewModeSwitch(self.toolbar_right)

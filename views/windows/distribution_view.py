@@ -18,8 +18,10 @@ from views.components.list_item import ListItem
 
 
 class DistributionView(ctk.CTkToplevel):
-    def __init__(self, tab_info: dict, **kwargs):
+    def __init__(self, on_save=None, **kwargs):
         super().__init__(**kwargs)
+
+        self.on_save = on_save if on_save else lambda x: None
 
         # Configurações da janela
         self.configure(fg_color="#2E333C")
@@ -34,9 +36,6 @@ class DistributionView(ctk.CTkToplevel):
         self.grab_set()
         self.lift()
         self.focus_force()
-
-        # Informações da tab distribuições
-        self.tab_info = tab_info
 
         # Frame principal
         self.main_frame = ctk.CTkFrame(self, fg_color="transparent")
@@ -70,7 +69,7 @@ class DistributionView(ctk.CTkToplevel):
         self.workspace.add(self.tasks, width=250, padx=10)
 
         # Botão distribuir
-        self.generate_button = ProButton(self.main_frame, text="Distribuir", command=self._on_generate)
+        self.generate_button = ProButton(self.main_frame, text="Distribuir", command=self.generate)
         self.generate_button.pack(side="top", anchor="e", padx=(0, 10), pady=5)
 
         self.message = ctk.CTkLabel(self.main_frame, text="Títule a distribuição e selecione as pessoas e tarefas", font=("Tahoma", 11))
@@ -93,7 +92,7 @@ class DistributionView(ctk.CTkToplevel):
         self.people.refresh()
         self.tasks.refresh()
 
-    def _on_generate(self):
+    def generate(self):
         """Gera a distribuição de tarefas."""
         if len(self.people.get_selected_people()) == 0 or len(self.tasks.get_selected_tasks()) == 0:
             self.message.configure(text="Selecione pelo menos uma pessoa e uma tarefa para distribuir.")
@@ -108,14 +107,16 @@ class DistributionView(ctk.CTkToplevel):
         distro_info = {
             "title": self.distro_title.get(),
             "total_tasks": len(self.tasks.get_selected_tasks()),
-            "finished_tasks": 0,
+            "finished_tasks": 0
         }
 
-        item = ListItem(self.tab_info["tab_meta"]["list_container"], distro_info)
-        self.tab_info["tab_meta"]["list_container"].add_item(item)
+        self.on_save(distro_info)
 
-        card = Card(self.tab_info["tab_meta"]["cards_container"], distro_info)
-        self.tab_info["tab_meta"]["cards_container"].add_card(card)
+        #item = ListItem(self.tab_info["tab_meta"]["list_container"], distro_info)
+        #self.tab_info["tab_meta"]["list_container"].add_item(item)
+
+        #card = Card(self.tab_info["tab_meta"]["cards_container"], distro_info)
+        #self.tab_info["tab_meta"]["cards_container"].add_card(card)
 
 
 class OptionsView(ctk.CTkFrame):

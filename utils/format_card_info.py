@@ -1,6 +1,9 @@
 from datetime import datetime, date
 from typing import Any, Dict
 
+from models.sector_model import Sector
+
+
 LABELS_PT = {
     # Comuns
     "id": "ID",
@@ -51,6 +54,10 @@ def format_card_info(fields: Dict[str, Any]) -> Dict[str, Any]:
         # Ignorar vazios e campos técnicos
         if value in (None, "") or key in hidden_keys:
             continue
+
+        # Mostra o nome do setor
+        if key == "sector":
+            value = Sector.get_by_id(value)
 
         # Mapear rótulo
         label = LABELS_PT.get(key, None)

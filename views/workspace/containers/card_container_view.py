@@ -33,9 +33,10 @@ class CardContainer(ctk.CTkScrollableFrame):
         for data in model:
             self.cards.append(Card(self, data))
 
-    def add_card(self, card: ctk.CTkFrame):
+    def add_card(self, card_info: dict):
         """ Adiciona um novo card ao container """
-        self.cards.append(card)
+        print(card_info)
+        self.cards.append(Card(self, card_info))
         self.relayout()
 
     def relayout(self):

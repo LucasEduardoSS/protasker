@@ -44,14 +44,20 @@ class Card(ctk.CTkFrame):
         self._card_info_frame = None
 
         # Carrega os campos, se fornecido
-        if model_info is not None:
-            self.load_fields(format_card_info(model_info))
+        if model_info is not None or model_info == {}:
+            self.load_fields(model_info)
+        else:
+            raise ValueError("model_info cannot be None")
 
     def load_fields(self, fields: dict):
-        """Carrega os campos do card com os dados do registro."""
+        """Carrega os campos do card com os dados de um registro."""
+
         # Limpa conteúdo anterior, se existir
         if self._card_info_frame is not None:
             self._card_info_frame.destroy()
+
+        # Formata os dados do registro
+        fields = format_card_info(fields)
 
         card_info_frame = ctk.CTkFrame(self)
         card_info_frame.grid(row=0, column=0, padx=5, pady=5, ipadx=2, ipady=2, sticky="nsew")
@@ -92,5 +98,14 @@ class Card(ctk.CTkFrame):
             lb.pack(side="top", anchor="w", padx=5, pady=4, fill="x", expand=True)
 
     def edit_card(self):
-        EditBaseWindowView(self.model, self.model_info)
-        pass
+        """Abre uma janela de edição do registro."""
+        EditBaseWindowView(
+            model_cls=self.model,
+            model_info=self.model_info,
+            on_save=self._apply_update
+        )
+
+    def _apply_update(self, updated_row: dict):
+        """Called by the edit window after a successful save."""
+        self.model_info = updated_row
+        self.load_fields(updated_row)

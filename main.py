@@ -18,8 +18,8 @@ if database.is_closed():
   database.connect()
 
 # Cria as tabelas
-database.drop_tables([Person, Task, Sector, Distribution, Assignment])
-database.create_tables([Person, Task, Sector, Distribution, Assignment], safe=True)
+database.drop_tables([Assignment, Person, Task, Distribution, Sector], safe=True)
+database.create_tables([Sector, Person, Task, Distribution, Assignment], safe=True)
 
 # Gera dados de exemplo
 gen_sample_data()

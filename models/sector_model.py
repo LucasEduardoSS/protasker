@@ -1,8 +1,15 @@
-from peewee import Model, CharField
+from peewee import CharField
+
 from database.db import database
+from models.base_model import BaseModel
 
 
-class Sector(Model):
+class Sector(BaseModel):
+    """
+    Classe modelo de setor.
+    Campos: Nome
+    """
+
     name = CharField()
 
     class Meta:
@@ -16,17 +23,5 @@ class Sector(Model):
         return f"<Sector: {self.name}>"
 
     @staticmethod
-    def get_all():
-        return Sector.select()
-
-    @staticmethod
-    def get_all_dicts(order_by: bool = True):
-        """
-        Retorna uma lista de dicionários com os dados das pessoas.
-        - order_by: se True, ordena por nome.
-        """
-        query = Sector.select()
-
-        if order_by:
-            query = query.order_by(Sector.name)
-        return list(query.dicts())
+    def get_by_name(name: str):
+        return Sector.get_or_none(Sector.name == name)

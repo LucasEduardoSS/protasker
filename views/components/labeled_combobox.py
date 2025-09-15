@@ -14,14 +14,18 @@ class LabeledComboBox(ctk.CTkFrame):
         self.label.pack(side="left", padx=(10,0))
 
         # Botão de adicionar um registro
-        self.add_sector_button = ctk.CTkButton(self, width=25, text="+", font=("Tahoma", 11), command=None)
-        self.add_sector_button.pack(side="right")
+        #self.add_button = ctk.CTkButton(self, width=25, text="+", font=("Tahoma", 11))
+        #self.add_button.pack(side="right")
 
         # ComboBox
         self.combo = ctk.CTkComboBox(self, values=model_values, font=("Tahoma", 11), fg_color="#2E333C", border_color="#AAA")
-        self.combo.pack(side="right", fill="x", padx=(10, 5), expand=True)
+        self.combo.pack(side="right", fill="x", padx=(10, 0), expand=True)
 
         # Desabilita o campo quando não houver valores registrados
         if not model_values:
             self.combo.set(f"Nenhum {label.lower()}")
             self.combo.configure(state="disabled")
+
+    def get(self) -> str:
+        """Retorna o valor selecionado (ou string vazia)."""
+        return self.combo.get().strip()

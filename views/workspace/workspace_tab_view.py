@@ -4,6 +4,9 @@ from views.workspace.workspace_toolbar_view import WorkspaceToolbarView
 from views.workspace.containers.card_container_view import CardContainer
 from views.workspace.containers.list_container_view import ListContainer
 
+from views.windows.distribution_view import DistributionView
+from views.windows.edit_view import EditBaseWindowView
+
 
 class WorkspaceTabView(ctk.CTkTabview):
     def __init__(self, master, **kwargs):
@@ -73,18 +76,49 @@ class WorkspaceTabView(ctk.CTkTabview):
             "content": content,
             "cards_container": cards_container,
             "list_container": list_container,
-            "view_switch": toolbar.view_mode_switch
+            "view_switch": toolbar.view_mode_switch_btn
         })
 
-        # Constrói o container padrão
-        toolbar.view_mode_switch.on_mode_change(self.tabs_meta[name]["view_mode"])
+        # Configura os botões da toolbar
+        toolbar.view_mode_switch_btn.configure(command=lambda value: self.on_mode_change(name, value))
+        if name == "Distribuições":
+            toolbar.add_btn.configure(command=self.add_distribution)
+        else:
+            toolbar.add_btn.configure(command=lambda: self.add_record(name))
+
+        # Configura e carrega a visualização inicial dos dados
+        toolbar.view_mode_switch_btn.set(self.tabs_meta[name]["view_mode"])
+        self.on_mode_change(name, self.tabs_meta[name]["view_mode"])
 
         # Carrega os dados de cada tab
-        self.load_data(name)
+        data: list[dict] = self.tabs_meta[name]["model"].get_all_dicts()
+        for item in data:
+            self.load_record(name, item)
 
-    def load_data(self, tab_name: str = None):
-        """Carrega os dados de cada tab."""
-        data = self.tabs_meta[tab_name]["model"].get_all_dicts(True)
+    def on_mode_change(self, tab_name, value: str):
+        """Muda a visualização dos dados."""
+        if value == "Cards":
+            self.tabs_meta[tab_name]["list_container"].pack_forget()
+            self.tabs_meta[tab_name]["cards_container"].pack(fill="both", expand=True)
+            self.tabs_meta[tab_name]["view_mode"] = "Cards"
+        else:
+            self.tabs_meta[tab_name]["cards_container"].pack_forget()
+            self.tabs_meta[tab_name]["list_container"].pack(fill="both", expand=True)
+            self.tabs_meta[tab_name]["view_mode"] = "Lista"
 
-        self.tabs_meta[tab_name]["cards_container"].load_cards(data)
-        self.tabs_meta[tab_name]["list_container"].load_items(data)
+    def load_record(self, name: str, record_info: dict):
+        """Insere um novo registro na tab."""
+        self.tabs_meta[name]["list_container"].add_item(record_info)
+        self.tabs_meta[name]["cards_container"].add_card(record_info)
+
+    def add_record(self, name: str):
+        """Abre uma janela de inserção de registro."""
+        EditBaseWindowView(
+            tab_name=name,
+            model_cls=self.tabs_meta[name]["model"],
+            on_save=self.load_record
+        )
+
+    def add_distribution(self):
+        """Abre uma janela de distribuição de tarefas."""
+        DistributionView(on_save=lambda info: self.load_record("Distribuições", info))

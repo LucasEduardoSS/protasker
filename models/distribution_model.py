@@ -1,8 +1,15 @@
-from peewee import Model, IntegerField, CharField
+from peewee import IntegerField, CharField
+
 from database.db import database
+from models.base_model import BaseModel
 
 
-class Distribution(Model):
+class Distribution(BaseModel):
+    """
+    Classe modelo de distribuição de tarefas.
+    Possui os campos: Título, total de tarefas e número de tarefas concluídas.
+    """
+
     title = CharField()
     total_tasks = IntegerField()
     finished_tasks = IntegerField()
@@ -10,12 +17,3 @@ class Distribution(Model):
     class Meta:
         database = database
         table_name = 'distribution'
-
-    @staticmethod
-    def get_all_dicts(order_by: bool = True):
-        """Retorna uma lista de dicionários com os dados das pessoas."""
-
-        query = Distribution.select()
-        if order_by:
-            query = query.order_by(Distribution.title)
-        return list(query.dicts())

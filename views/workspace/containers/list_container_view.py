@@ -15,9 +15,10 @@ class ListContainer(CTkScrollableFrame):
             self.list_items.append(ListItem(self, item))
         self.relayout()
 
-    def add_item(self, item):
+    def add_item(self, item_info: dict):
         """ Adiciona um novo item ao container """
-        self.list_items.append(item)
+        print(item_info)
+        self.list_items.append(ListItem(self, item_info))
         self.relayout()
 
     def relayout(self):
