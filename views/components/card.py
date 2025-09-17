@@ -1,11 +1,15 @@
 import customtkinter as ctk
 
 from views.components.edit_button import EditButton
-from views.windows.edit_view import EditBaseWindowView
-from utils.format_card_info import format_card_info
+from views.windows.edit_view import EditView
+
+from utils.widgets_utils import format_card_info
+from utils.widgets_utils import propagate_hover_bind
 
 
 class Card(ctk.CTkFrame):
+    """ Define um card de registro. """
+
     def __init__(self, master, model_info: dict | None = None, **kwargs):
         super().__init__(master, **kwargs)
 
@@ -19,8 +23,8 @@ class Card(ctk.CTkFrame):
         self.configure(
             fg_color="#3E4D66",
             border_color="#777",
-            border_width=1,
-            corner_radius=0,
+            border_width=0,
+            corner_radius=5,
             height=250,
             width=175
         )
@@ -33,21 +37,20 @@ class Card(ctk.CTkFrame):
         self.grid_propagate(False)
 
         # Botão de editar registro
-        edit_button = EditButton(self, text="", command=self.edit_card)
+        edit_button = EditButton(self, text="", command=self.edit_record)
         edit_button.grid(row=0, column=1, padx=5, pady=5, sticky="n")
-
-        # Hover leve (evita mudança contínua em <Motion>)
-        self.bind("<Enter>", lambda e: self.configure(fg_color=self._hover_fg))
-        self.bind("<Leave>", lambda e: self.configure(fg_color=self._normal_fg))
 
         # Frame que conterá os campos (reutilizado)
         self._card_info_frame = None
 
-        # Carrega os campos, se fornecido
+        # Carrega os campos
         if model_info is not None or model_info == {}:
             self.load_fields(model_info)
         else:
             raise ValueError("model_info cannot be None")
+
+        # Propaga o hover bind para todos os widgets do item
+        propagate_hover_bind(self, self._hover_fg, self._normal_fg)
 
     def load_fields(self, fields: dict):
         """Carrega os campos do card com os dados de um registro."""
@@ -59,6 +62,7 @@ class Card(ctk.CTkFrame):
         # Formata os dados do registro
         fields = format_card_info(fields)
 
+        # Cria frame para os campos
         card_info_frame = ctk.CTkFrame(self)
         card_info_frame.grid(row=0, column=0, padx=5, pady=5, ipadx=2, ipady=2, sticky="nsew")
         card_info_frame.configure(fg_color="transparent")
@@ -75,7 +79,7 @@ class Card(ctk.CTkFrame):
 
             # Nome do campo
             lb = ctk.CTkLabel(
-                card_info_frame,
+                self._card_info_frame,
                 text=str(key) + ":",
                 fg_color="transparent",
                 font=("Tahoma", 11, "bold"),
@@ -87,7 +91,7 @@ class Card(ctk.CTkFrame):
 
             # Valor do campo
             lb = ctk.CTkLabel(
-                card_info_frame,
+                self._card_info_frame,
                 text=str(value),
                 fg_color="transparent",
                 font=("Tahoma", 11),
@@ -97,15 +101,15 @@ class Card(ctk.CTkFrame):
             )
             lb.pack(side="top", anchor="w", padx=5, pady=4, fill="x", expand=True)
 
-    def edit_card(self):
+    def edit_record(self):
         """Abre uma janela de edição do registro."""
-        EditBaseWindowView(
+        EditView(
             model_cls=self.model,
             model_info=self.model_info,
             on_save=self._apply_update
         )
 
     def _apply_update(self, updated_row: dict):
-        """Called by the edit window after a successful save."""
+        """Chamado pela janela de edição após um save sucedido."""
         self.model_info = updated_row
         self.load_fields(updated_row)

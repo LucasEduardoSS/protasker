@@ -7,17 +7,19 @@ from utils.widgets_utils import format_card_info
 from utils.widgets_utils import propagate_hover_bind
 
 
-class ListItem(CTkFrame):
-    """ Define um item de lista de registros. """
+class Record(CTkFrame):
+    """
+    Widget para exibir um registro.
+    Pode ser configurado como card ou item.
+    """
 
-    def __init__(self, master, model_info: dict, **kwargs):
+    def __init__(self, master, model_info: dict, mode: str, **kwargs):
         super().__init__(master, **kwargs)
 
+        self.mode = mode
         self.model = master.model
         self.model_info = model_info
         self._item_info_frame = None
-
-        print(model_info)
 
         # Configuração do card
         self._normal_fg = "#3E4D66"
@@ -28,7 +30,7 @@ class ListItem(CTkFrame):
         edit_button = EditButton(self, text="Editar", command=self.edit_record)
         edit_button.pack(side="right", padx=(0, 5))
 
-        # Carrega os campos
+        # Carrega os campos, se fornecido
         if model_info is not None or model_info == {}:
             self.load_fields(model_info)
         else:
@@ -53,25 +55,25 @@ class ListItem(CTkFrame):
         item_info_frame.configure(fg_color="transparent")
         self._item_info_frame = item_info_frame
 
-        for field in fields.items():
+        for key, value in fields.items():
             # Ignora campos vazios
-            if field[1] is None:
+            if value is None:
                 continue
 
             # Nome do campo
-            name_lb = CTkLabel(
+            name_label = CTkLabel(
                 self._item_info_frame,
-                text=field[0]+":",
+                text=key+":",
                 fg_color="transparent",
                 font=("Tahoma", 11, "bold"),
                 height=20,
             )
-            name_lb.pack(side="left", ipadx=10)
+            name_label.pack(side="left", ipadx=10)
 
             # Valor do campo
             value_label = CTkLabel(
                 self._item_info_frame,
-                text=field[1],
+                text=value,
                 fg_color="transparent",
                 font=("Tahoma", 11)
             )
@@ -82,10 +84,10 @@ class ListItem(CTkFrame):
         EditView(
             model_cls=self.model,
             model_info=self.model_info,
-            on_save=self.apply_update
+            on_save=self._apply_update
         )
 
-    def apply_update(self, updated_row: dict):
+    def _apply_update(self, updated_row: dict):
         """Chamado pela janela de edição após um save sucedido."""
         self.model_info = updated_row
         self.load_fields(updated_row)

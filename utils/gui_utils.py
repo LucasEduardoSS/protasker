@@ -1,4 +1,4 @@
-# utils/gui.py
+# utils/gui_utils.py
 
 def center_window(window, size: tuple[int, int] = None):
     """

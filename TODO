@@ -8,3 +8,5 @@
 - Criar um sistema de busca dentro da tab de registros
 - Tab da sidebar para visualizar árvore de tarefas
 - Adicionar imagens na tab 'primeiros-passos' da sidebar
+- Mesclar os containers de card e item
+- Mesclar a classe card com a classe item

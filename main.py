@@ -8,7 +8,7 @@ from models.task_model import Task
 from models.sector_model import Sector
 from models.assignment_model import Assignment
 from views.main_view import ProTaskerView
-from utils.gen_sample_db import gen_sample_data
+from utils.db_utils import gen_sample_data
 
 ctk.set_appearance_mode("dark")
 ctk.set_default_color_theme("blue")

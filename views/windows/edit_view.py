@@ -1,10 +1,10 @@
 from customtkinter import CTkToplevel
 
 from views.windows.model_form import ModelForm
-from utils.gui import center_window
+from utils.gui_utils import center_window
 
 
-class EditBaseWindowView(CTkToplevel):
+class EditView(CTkToplevel):
     def __init__(self,
                  model_cls,
                  model_info: dict | None = None,

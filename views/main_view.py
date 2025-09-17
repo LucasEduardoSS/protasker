@@ -1,6 +1,6 @@
 from customtkinter import CTk
 
-from utils.gui import center_window
+from utils.gui_utils import center_window
 from views.menu.menu_view import Menu
 from views.workspace.workspace_view import WorkspaceView
 from views.sidebar.sidebar_view import SidebarView

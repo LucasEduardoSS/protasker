@@ -3,7 +3,7 @@ from tkinter import PanedWindow
 
 # Functions
 from functions.distribution_algorithms import distribute_tasks_fair
-from utils.gui import center_window
+from utils.gui_utils import center_window
 
 # Models
 from models.person_model import Person

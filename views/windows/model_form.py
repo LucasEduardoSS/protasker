@@ -1,7 +1,7 @@
 import customtkinter as ctk
 from peewee import ForeignKeyField
 
-from utils.format_card_info import LABELS_PT
+from utils.widgets_utils import LABELS_PT
 from views.components.pro_widgets import ProButton
 from views.components.labeled_entry import LabeledEntryView
 from views.components.labeled_combobox import LabeledComboBox
@@ -60,11 +60,14 @@ class ModelForm(ctk.CTkFrame):
 
     def get_data(self) -> dict:
         """Retorna um dict com os valores atuais do formulário."""
+
         data = {}
+
         for name, widget in self.entries.items():
             # LabeledComboBox não expõe get() direto; usa o combo interno
             if isinstance(widget, LabeledComboBox):
                 data[name] = self.fk_map[name].get_by_name(widget.get())
             else:
                 data[name] = widget.get().strip()
+
         return data

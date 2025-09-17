@@ -5,7 +5,7 @@ from views.workspace.containers.card_container_view import CardContainer
 from views.workspace.containers.list_container_view import ListContainer
 
 from views.windows.distribution_view import DistributionView
-from views.windows.edit_view import EditBaseWindowView
+from views.windows.edit_view import EditView
 
 
 class WorkspaceTabView(ctk.CTkTabview):
@@ -54,7 +54,7 @@ class WorkspaceTabView(ctk.CTkTabview):
             "cards_container": None,
             "list_container": None,
             "view_switch": None,
-            "view_mode": "Lista"
+            "view_mode": "Cards"  # Lista ou Cards
         }
 
         # Toolbar (topo da tab)
@@ -65,8 +65,8 @@ class WorkspaceTabView(ctk.CTkTabview):
         content.pack(side="top", pady=(10, 0), fill="both", expand=True)
 
         # Containers para modos de visualização
-        cards_container = CardContainer(content, model, fg_color="transparent")
-        list_container = ListContainer(content, fg_color="transparent")
+        cards_container = CardContainer(content, model)
+        list_container = ListContainer(content, model)
 
         # Guarda metadados da tab
         self.tabs_meta[name].update({
@@ -88,34 +88,69 @@ class WorkspaceTabView(ctk.CTkTabview):
 
         # Configura e carrega a visualização inicial dos dados
         toolbar.view_mode_switch_btn.set(self.tabs_meta[name]["view_mode"])
-        self.on_mode_change(name, self.tabs_meta[name]["view_mode"])
+        self.set_container(name, self.tabs_meta[name]["view_mode"])
 
         # Carrega os dados de cada tab
         data: list[dict] = self.tabs_meta[name]["model"].get_all_dicts()
         for item in data:
             self.load_record(name, item)
 
-    def on_mode_change(self, tab_name, value: str):
-        """Muda a visualização dos dados."""
-        if value == "Cards":
+    def on_mode_change(self, tab_name: str, mode: str):
+        """
+        Muda a visualização dos dados.
+        - tab_name: nome da tab
+        - value: mode de visualização (Lista ou Cards)
+        """
+
+        if mode.lower() == "cards":
             self.tabs_meta[tab_name]["list_container"].pack_forget()
-            self.tabs_meta[tab_name]["cards_container"].pack(fill="both", expand=True)
-            self.tabs_meta[tab_name]["view_mode"] = "Cards"
         else:
             self.tabs_meta[tab_name]["cards_container"].pack_forget()
+
+        self.tabs_meta[tab_name]["view_switch"].set(mode)
+        self.set_container(tab_name, mode)
+        self.refresh_container(tab_name, mode)
+
+    def set_container(self, tab_name, mode):
+        """
+        Carrega o container de dados.
+        - tab_name: nome da tab
+        - mode: mode de visualização (Lista ou Cards)
+        """
+
+        if mode.lower() == "cards":
+            self.tabs_meta[tab_name]["cards_container"].pack(fill="both", expand=True)
+        else:
             self.tabs_meta[tab_name]["list_container"].pack(fill="both", expand=True)
-            self.tabs_meta[tab_name]["view_mode"] = "Lista"
 
-    def load_record(self, name: str, record_info: dict):
-        """Insere um novo registro na tab."""
-        self.tabs_meta[name]["list_container"].add_item(record_info)
-        self.tabs_meta[name]["cards_container"].add_card(record_info)
+    def refresh_container(self, tab_name, mode):
+        data: list[dict] = self.tabs_meta[tab_name]["model"].get_all_dicts()
 
-    def add_record(self, name: str):
-        """Abre uma janela de inserção de registro."""
-        EditBaseWindowView(
-            tab_name=name,
-            model_cls=self.tabs_meta[name]["model"],
+        if mode.lower() == "cards":
+            self.tabs_meta[tab_name]["cards_container"].refresh_cards(data)
+        else:
+            self.tabs_meta[tab_name]["list_container"].refresh_items(data)
+
+
+    def load_record(self, tab_name: str, record_info: dict):
+        """
+        Carrega um registro na tab.
+        - tab_name: nome da tab
+        - record_info: informações do registro
+        """
+
+        self.tabs_meta[tab_name]["list_container"].add_item(record_info)
+        self.tabs_meta[tab_name]["cards_container"].add_card(record_info)
+
+    def add_record(self, tab_name: str):
+        """
+        Abre uma janela de inserção de registro.
+        - tab_name: nome da tab
+        """
+
+        EditView(
+            tab_name=tab_name,
+            model_cls=self.tabs_meta[tab_name]["model"],
             on_save=self.load_record
         )
 
