@@ -1,23 +1,18 @@
 import customtkinter as ctk
-from pathlib import Path
-from PIL import Image
 
-# Obtém o caminho base do projeto
-BASE_DIR = Path(__file__).resolve().parent.parent.parent
-
-# Define o caminho para a pasta de imagens
-IMAGES_DIR = BASE_DIR / "images"
+from utils.image_utils import get_image_as_tkimage
 
 
 class SidebarView(ctk.CTkFrame):
+    """ Define a barra lateral do workspace. """
+
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
 
         self.configure(fg_color="#2E333C", corner_radius=0)
         self.pack(side="left", anchor="nw", fill="y", padx=0, pady=0)
 
-        self.buttons = []
-        self.buttons_by_tab = {}
+        self.tab_buttons = {}
         self.active_tab_id = None
 
         # Cores para estados
@@ -26,33 +21,25 @@ class SidebarView(ctk.CTkFrame):
         self.inactive_fg = "transparent"
         self.inactive_hover = "#3E4D66"
 
-        self._setup_buttons()
-
-    def _setup_buttons(self):
+        # Define os botões
         buttons_config = [
-            (str(IMAGES_DIR / "clarify-filled-icon.png"), "detalhes", "Detalhes"),
-            (str(IMAGES_DIR / "checklist-icon.png"), "controle", "Controle"),
-            (str(IMAGES_DIR / "hand-raised-icon.png"), "primeiros-passos", "Primeiros Passos")
+            ("clarify-filled-icon.png", "detalhes", "Detalhes"),
+            ("checklist-icon.png", "controle", "Controle"),
+            ("hand-raised-icon.png", "primeiros-passos", "Primeiros Passos")
         ]
 
+        # Carrega os botões
         for icon, tab_id, tooltip in buttons_config:
-            btn = self._create_button(icon, tab_id)
-            self.buttons.append(btn)
-            self.buttons_by_tab[tab_id] = btn
-
-        self._set_active_button("primeiros-passos")
+            self._create_button(icon, tab_id)
 
     def _create_button(self, icon_path, tab_id):
-        icon_image = ctk.CTkImage(
-            light_image=Image.open(icon_path),
-            dark_image=Image.open(icon_path),
-            size=(20, 20)
-        )
+        """Cria um botão para sidebar e atribui uma tab."""
 
+        # Botão
         button = ctk.CTkButton(
             self,
             text='',
-            image=icon_image,
+            image=get_image_as_tkimage(icon_path, size=20),
             width=30,
             height=30,
             fg_color="transparent",
@@ -62,7 +49,8 @@ class SidebarView(ctk.CTkFrame):
             command=lambda: self._toggle_tab(tab_id)
         )
         button.pack(pady=(2, 0))
-        return button
+        
+        self.tab_buttons[tab_id] = button
 
     def _toggle_tab(self, tab_id):
         """Ativa/Desativa a aba baseado no tab_id informado."""
@@ -78,7 +66,7 @@ class SidebarView(ctk.CTkFrame):
         """Atualiza visual dos botões baseado na tab ativa"""
 
         if tab_id == self.active_tab_id:
-            self.buttons_by_tab[tab_id].configure(fg_color=self.inactive_fg, hover_color=self.inactive_hover)
+            self.tab_buttons[tab_id].configure(fg_color=self.inactive_fg, hover_color=self.inactive_hover)
             self.active_tab_id = None
             return
 
@@ -86,7 +74,7 @@ class SidebarView(ctk.CTkFrame):
         self.active_tab_id = tab_id
 
         # Muda a cor dos botões
-        for tid, button in self.buttons_by_tab.items():
+        for tid, button in self.tab_buttons.items():
             if tid == tab_id:
                 button.configure(fg_color=self.active_fg, hover_color=self.active_hover)
             else:

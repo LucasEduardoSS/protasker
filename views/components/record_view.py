@@ -13,47 +13,39 @@ class Record(CTkFrame):
     Pode ser configurado como card ou item.
     """
 
-    def __init__(self, master, model_info: dict, mode: str, **kwargs):
+    def __init__(self, master, model, model_info: dict, mode: str, **kwargs):
         super().__init__(master, **kwargs)
 
+        # Atributos
         self.mode = mode
-        self.model = master.model
+        self.model = model
         self.model_info = model_info
-        self._item_info_frame = None
 
-        # Configuração do card
-        self._normal_fg = "#3E4D66"
-        self._hover_fg = "#465773"
-        self.configure(fg_color="#3E4D66", border_color="#777", height=30)
+        # Widgets
+        self.field_labels = []
+        self.field_values = []
 
-        # Botão de editar registro
-        edit_button = EditButton(self, text="Editar", command=self.edit_record)
-        edit_button.pack(side="right", padx=(0, 5))
+        # Configuração comum
+        self.configure(fg_color="#3E4D66")
 
         # Carrega os campos, se fornecido
         if model_info is not None or model_info == {}:
-            self.load_fields(model_info)
+            self.build_fields(model_info)
         else:
             raise ValueError("model_info cannot be None")
+
+        # Cores
+        self._normal_fg = "#3E4D66"
+        self._hover_fg = "#465773"
 
         # Propaga o hover bind para todos os widgets do item
         propagate_hover_bind(self, self._hover_fg, self._normal_fg)
 
-    def load_fields(self, fields: dict):
+    def build_fields(self, fields: dict):
         """Carrega os campos do card com os dados do registro."""
-
-        # Limpa conteúdo anterior, se existir
-        if self._item_info_frame is not None:
-            self._item_info_frame.destroy()
 
         # Formata os dados do registro
         fields = format_card_info(fields)
-
-        # Cria frame para os campos
-        item_info_frame = CTkFrame(self)
-        item_info_frame.pack(side="left", fill="x", expand=True)
-        item_info_frame.configure(fg_color="transparent")
-        self._item_info_frame = item_info_frame
 
         for key, value in fields.items():
             # Ignora campos vazios
@@ -61,23 +53,21 @@ class Record(CTkFrame):
                 continue
 
             # Nome do campo
-            name_label = CTkLabel(
-                self._item_info_frame,
+            self.field_labels.append(CTkLabel(
+                self,
                 text=key+":",
                 fg_color="transparent",
                 font=("Tahoma", 11, "bold"),
                 height=20,
-            )
-            name_label.pack(side="left", ipadx=10)
+            ))
 
             # Valor do campo
-            value_label = CTkLabel(
-                self._item_info_frame,
+            self.field_values.append(CTkLabel(
+                self,
                 text=value,
                 fg_color="transparent",
                 font=("Tahoma", 11)
-            )
-            value_label.pack(side="left", padx=(0, 10))
+            ))
 
     def edit_record(self):
         """Abre uma janela de edição do registro."""
@@ -87,10 +77,56 @@ class Record(CTkFrame):
             on_save=self._apply_update
         )
 
-    def _apply_update(self, updated_row: dict):
+    @staticmethod
+    def _apply_update(record, updated_row: dict):
         """Chamado pela janela de edição após um save sucedido."""
-        self.model_info = updated_row
-        self.load_fields(updated_row)
+        record.model_info = updated_row
+        record.load_fields(updated_row)
 
-    def toggle_filter_tab(self):
-        pass
+
+class Card(Record):
+    """ Define um card de registro. """
+
+    def __init__(self, master, **kwargs):
+        super().__init__(master, **kwargs)
+
+        # Configuração do card
+        self.configure(height=250, width=175)
+
+        # Configuração do Grid Layout
+        self.grid_columnconfigure(0, weight=2)
+        self.grid_columnconfigure(1, weight=0, minsize=30)
+
+        # Impede que os widgets redimensionem o card
+        self.grid_propagate(False)
+
+        # Botão de editar registro
+        edit_button = EditButton(self, text="", command=self.edit_record)
+        edit_button.grid(row=0, column=1, padx=5, pady=5, sticky="n")
+
+    def load_fields(self):
+        """Carrega os campos do card com os dados de um registro."""
+
+        for i in range(len(self.field_labels)):
+            self.field_labels[i].pack(side="top", anchor="w", padx=5, pady=(5, 0), fill="x", expand=True)
+            self.field_values[i].pack(side="top", anchor="w", padx=5, pady=4, fill="x", expand=True)
+
+
+class ListItem(Record):
+    """ Define um item de lista de registros. """
+
+    def __init__(self, master, **kwargs):
+        super().__init__(master, **kwargs)
+
+        self.configure(height=30)
+
+        # Botão de editar registro
+        edit_button = EditButton(self, text="Editar", command=self.edit_record)
+        edit_button.pack(side="right", padx=(0, 5))
+
+    def load_fields(self):
+        """Carrega os campos do registro."""
+
+        for i in range(len(self.field_labels)):
+            self.field_labels[i].pack(side="left", ipadx=10)
+            self.field_values[i].pack(side="left", ipadx=(0, 10))

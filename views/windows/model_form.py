@@ -3,8 +3,7 @@ from peewee import ForeignKeyField
 
 from utils.widgets_utils import LABELS_PT
 from views.components.pro_widgets import ProButton
-from views.components.labeled_entry import LabeledEntryView
-from views.components.labeled_combobox import LabeledComboBox
+from views.components.pro_labeled_widgets import LabeledEntryView, LabeledComboBox
 
 
 class ModelForm(ctk.CTkFrame):
@@ -68,6 +67,6 @@ class ModelForm(ctk.CTkFrame):
             if isinstance(widget, LabeledComboBox):
                 data[name] = self.fk_map[name].get_by_name(widget.get())
             else:
-                data[name] = widget.get().strip()
+                data[name] = widget.get()
 
         return data

@@ -3,7 +3,6 @@ from peewee import CharField, ForeignKeyField
 from database.db import database
 from models.base_model import BaseModel
 from models.sector_model import Sector
-from models.task_model import Task
 
 
 class Person(BaseModel):

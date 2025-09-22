@@ -26,20 +26,18 @@ class WorkspaceView(ttk.PanedWindow):
         )
         self.pack(fill="both", expand=True)
 
-        # Controle se há aba visível
-        self.sidebar_tabs_visible = True
-
         # Tabs da sidebar
         self.sidebar_tabs = SidebarTabView(self)
-        self.sidebar_tabs.setup_tabs()
 
         # Mostra os primeiros-passos na inicialização
-        self.add(self.sidebar_tabs, minsize=100, width=300)
-        self.sidebar_tabs.show_tab('primeiros-passos')
+        #self.add(self.sidebar_tabs, minsize=100, width=300)
+        #self.sidebar_tabs.show_tab('primeiros-passos')
+        #self.sidebar_tabs.current_tab = 'primeiros-passos'
+        self.sidebar_tabs_visible = False
 
         # Workspace tabs
         self.workspace_tabs = WorkspaceTabView(self)
-        self.add(self.workspace_tabs)
+        self.add(self.workspace_tabs, minsize=300)
 
         # Criando as abas principais
         self.workspace_tabs.add("Distribuições", Distribution)
@@ -50,13 +48,7 @@ class WorkspaceView(ttk.PanedWindow):
         # Ajustes finos do Workspace
         self.workspace_tabs.configure(corner_radius=0)
         self.workspace_tabs.grid_rowconfigure(2, minsize=0)
-        self.workspace_tabs._segmented_button.grid(row=0, column=0, sticky="w", ipadx=20)
-
-        # Conteúdo
-        self.content_meta = {
-            "sidebar_tabs": self.sidebar_tabs,
-            "workspace": self.workspace_tabs
-        }
+        self.workspace_tabs._segmented_button.grid(row=0, column=0, sticky="w", ipadx=40)
 
     def toggle_sidebar_tabs(self, tab_id):
         """ Metodo para gerenciar a exibição das tabs da sidebar. Adiciona

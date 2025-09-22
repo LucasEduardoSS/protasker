@@ -1,12 +1,19 @@
 
 - Menus
-- Tab de controle da sidebar
+- Tab de controle da sidebar (em andamento)
 - Tab de detalhes da sidebar
+- Programar o filtro das tabs
 
 < IDEIAS >
 
+- Verificar a possibilidade de criar um sistema de login
+- Verificar a possibilidade de centralizar a construção da UI no arquivo main
 - Criar um sistema de busca dentro da tab de registros
 - Tab da sidebar para visualizar árvore de tarefas
 - Adicionar imagens na tab 'primeiros-passos' da sidebar
-- Mesclar os containers de card e item
-- Mesclar a classe card com a classe item
+- Mesclar os containers de card e item (Em andamento) (em teste)
+- Mesclar a classe card com a classe item (Em andamento) (em teste)
+- Adicionar uma tab para atribuições no workspace
+- Adicionar configuração para tarefa periódica
+- Filtragem dinâmica dos itens nas listas de distribuição. Neste caso
+  pode ser necessário trabalhar com Models ao invés de dicionários.

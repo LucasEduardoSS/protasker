@@ -7,6 +7,7 @@ from random import shuffle
 from models.person_model import Person
 from models.task_model import Task
 from models.assignment_model import Assignment
+from models.distribution_model import Distribution
 
 
 @dataclass(order=True)
@@ -31,6 +32,7 @@ def _resolve_db():
 
 
 def distribute_tasks_fair(
+        distro: Distribution,
         people: List[Person],
         tasks: List[Task],
         *,
@@ -67,25 +69,31 @@ def distribute_tasks_fair(
     tasks_desc = sorted(tasks, key=lambda e: int(getattr(e, "weight", 0) or 0), reverse=True)
 
     # Alocação gulosa: menor carga → menos tarefas → índice estável
-    for t in tasks_desc:
-        w = int(getattr(t, "weight", 0) or 0)
-        b = min(buckets, key=lambda x: (x.load, len(x.tasks), x.index))
-        b.tasks.append(t)
-        b.load += w
+    for task in tasks_desc:
+        weight = int(getattr(task, "weight", 0) or 0)
+        bucket = min(buckets, key=lambda x: (x.load, len(x.tasks), x.index))
+        bucket.tasks.append(task)
+        bucket.load += weight
 
-    plan: List[Tuple[Person, List[Task]]] = [(b.person, b.tasks) for b in buckets]
+    plan: List[Tuple[Person, List[Task]]] = [(bucket.person, bucket.tasks) for bucket in buckets]
 
     # Persistência
     db = _resolve_db()
     with _atomic_if(db):
+
+        # Limpa as atribuições existentes para essas pessoas
         if clear_existing_for_people:
             Assignment.delete().where(
                 Assignment.person.in_([p for p, _ in plan])
             ).execute()
 
-        # Use get_or_create para evitar duplicatas se unique(person, task) estiver aplicado
-        for person, ts in plan:
-            for task in ts:
-                Assignment.get_or_create(person=person, task=task)
+        try:
+            # Use get_or_create para evitar duplicatas se unique(person, task) estiver aplicado
+            for person, ts in plan:
+                for task in ts:
+                    Assignment.get_or_create(distro=distro, person=person, task=task)
+        except Exception:
+            db.rollback()
+            raise
 
     return plan

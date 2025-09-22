@@ -1,6 +1,7 @@
 from customtkinter import CTkFrame
 
 from views.components.toolbar_buttons import ViewModeSwitch, AddButton, FilterButton
+from views.components.tooltip import Tooltip
 
 
 class WorkspaceToolbarView(CTkFrame):
@@ -41,3 +42,7 @@ class WorkspaceToolbarView(CTkFrame):
         self.add_btn = AddButton(self.toolbar_left)
         self.filter_btn = FilterButton(self.toolbar_left)
         self.view_mode_switch_btn = ViewModeSwitch(self.toolbar_right)
+
+        # Tooltip dos botões
+        Tooltip(self.add_btn, "Adicionar")
+        Tooltip(self.filter_btn, "Filtrar")

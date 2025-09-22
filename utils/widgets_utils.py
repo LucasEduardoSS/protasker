@@ -1,7 +1,7 @@
 from datetime import datetime, date
 from typing import Any, Dict
 
-from models.sector_model import Sector
+from services.data_facade import DataFacade
 
 
 LABELS_PT = {
@@ -57,7 +57,7 @@ def format_card_info(fields: Dict[str, Any]) -> Dict[str, Any]:
 
         # Mostra o nome do setor
         if key == "sector":
-            value = Sector.get_by_id(value)
+            value = DataFacade.get_record("sectors", value)
 
         # Mapear rótulo
         label = LABELS_PT.get(key, None)

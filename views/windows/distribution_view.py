@@ -1,27 +1,32 @@
 import customtkinter as ctk
 from tkinter import PanedWindow
 
-# Functions
 from functions.distribution_algorithms import distribute_tasks_fair
+from services.assignment_service import AssignmentService
+from services.task_service import TaskService
+from services.sector_service import SectorService
 from utils.gui_utils import center_window
-
-# Models
+from services.person_service import PersonService
 from models.person_model import Person
 from models.task_model import Task
 from models.sector_model import Sector
-
-# Views
+from services.distribution_service import DistributionService
 from views.components.pro_widgets import ProComboBox, ProCheckBox, ProButton
-from views.components.labeled_entry import LabeledEntryView
-from views.components.card import Card
-from views.components.list_item import ListItem
+from views.components.pro_labeled_widgets import LabeledEntryView
 
 
 class DistributionView(ctk.CTkToplevel):
-    def __init__(self, on_save=None, **kwargs):
+    """Define uma janela para inserir ou atualizar uma distribuição de tarefas."""
+
+    def __init__(self, model_info: dict = None, on_save=None, **kwargs):
         super().__init__(**kwargs)
 
+        # Quando for uma atualização, receberá a função card._apply_update
+        # Quando for uma inserção, receberá a função workspace_tab_view.load_record
         self.on_save = on_save if on_save else lambda x: None
+
+        # Só receberá model_info em atualização
+        self.model_info = model_info
 
         # Configurações da janela
         self.configure(fg_color="#2E333C")
@@ -37,17 +42,14 @@ class DistributionView(ctk.CTkToplevel):
         self.lift()
         self.focus_force()
 
-        # Frame principal
-        self.main_frame = ctk.CTkFrame(self, fg_color="transparent")
-        self.main_frame.pack(padx=5, pady=5, fill="both", expand=True)
-
         # Título da distribuição
-        self.distro_title = LabeledEntryView(self.main_frame, "Título", "Distribuição", fg_color="#2C2E33")
+        self.distro_title = LabeledEntryView(self, "Título", fg_color="#2C2E33")
+        self.distro_title.entry.configure(placeholder_text=model_info["title"] if model_info else "Distribuição")
         self.distro_title.pack(side="top", anchor="w", padx=(0, 10), pady=5, fill="x")
 
         # Área de trabalho
         self.workspace = PanedWindow(
-            self.main_frame,
+            self,
             orient="horizontal",
             borderwidth=4,
             sashwidth=2,
@@ -60,8 +62,20 @@ class DistributionView(ctk.CTkToplevel):
 
         # Sessões da área de trabalho
         self.options = OptionsView(self.workspace)
-        self.people = PeopleView(self.workspace)
-        self.tasks = TasksView(self.workspace)
+        self.people = ListView(
+            master=self.workspace,
+            title="Pessoas",
+            itens=PersonService.get_all_people(),
+            model="person",
+            supported_filters=["sector", "company"]
+        )
+        self.tasks = ListView(
+            master=self.workspace,
+            title="Tarefas",
+            itens=TaskService.get_all_tasks(),
+            model="task",
+            supported_filters=["sector", "priority"]
+        )
 
         # Adiciona as sessões na workspace
         self.workspace.add(self.options, width=200, padx=10)
@@ -69,16 +83,16 @@ class DistributionView(ctk.CTkToplevel):
         self.workspace.add(self.tasks, width=250, padx=10)
 
         # Botão distribuir
-        self.generate_button = ProButton(self.main_frame, text="Distribuir", command=self.generate)
+        self.generate_button = ProButton(self, text="Distribuir", command=self.generate)
         self.generate_button.pack(side="top", anchor="e", padx=(0, 10), pady=5)
 
-        self.message = ctk.CTkLabel(self.main_frame, text="Títule a distribuição e selecione as pessoas e tarefas", font=("Tahoma", 11))
+        self.message = ctk.CTkLabel(self, text="Títule a distribuição e selecione as pessoas e tarefas", font=("Tahoma", 11))
         self.message.pack(side="top", anchor="w", padx=5, pady=0)
 
         # Conectar callbacks que dependem da instância
-        self.options.sector_combobox.configure(command=self._on_filters_changed)
-        self.options.priority_combobox.configure(command=self._on_filters_changed)
-        self.options.company_combobox.configure(command=self._on_filters_changed)
+        self.options.filters["setor"].configure(command=self._on_filters_changed)
+        self.options.filters["prioridade"].configure(command=self._on_filters_changed)
+        self.options.filters["empresa"].configure(command=self._on_filters_changed)
         self.options.clean_button.configure(command=self._on_filter_clear)
 
     def _on_filters_changed(self, _value=None):
@@ -94,42 +108,59 @@ class DistributionView(ctk.CTkToplevel):
 
     def generate(self):
         """Gera a distribuição de tarefas."""
-        if len(self.people.get_selected_people()) == 0 or len(self.tasks.get_selected_tasks()) == 0:
+
+        # Interrompe a distribuição caso nenhum registro seja selecionado
+        if len(self.people.get_selected()) == 0 or len(self.tasks.get_selected()) == 0:
             self.message.configure(text="Selecione pelo menos uma pessoa e uma tarefa para distribuir.")
             return
 
+        # Interrompe a distribuição caso nenhum nome tenha sido informado
         if self.distro_title.get() == "":
             self.message.configure(text="Defina um título para distribuição.")
             return
 
-        distro = distribute_tasks_fair(self.people.get_selected_people(), self.tasks.get_selected_tasks())
+        # Guarda ou atualiza as informações do modelo
+        if self.model_info:
+            self.model_info.update({
+                "title": self.distro_title.get().strip(),
+                "total_tasks": len(self.tasks.get_selected()),
+                "finished_tasks": 0
+            })
+        else:
+            self.model_info = {
+                "title": self.distro_title.get().strip(),
+                "total_tasks": len(self.tasks.get_selected()),
+                "finished_tasks": 0
+            }
 
-        distro_info = {
-            "title": self.distro_title.get(),
-            "total_tasks": len(self.tasks.get_selected_tasks()),
-            "finished_tasks": 0
-        }
+        # Cria ou atualiza a distribuição
+        if "id" in self.model_info:
+            distro = DistributionService.get_distribution_by_id(self.model_info["id"])
+            assignments = AssignmentService.get_assignment_by_distro(distro)
+            for assignment in assignments:
+                if assignment.person not in self.people.get_selected():
+                    AssignmentService.delete_assignment(assignment)
+        else:
+            distro = DistributionService.create_distribution(self.model_info)
 
-        self.on_save(distro_info)
+        # Distribui as tarefas
+        try:
+            buckets = distribute_tasks_fair(distro, self.people.get_selected(), self.tasks.get_selected())
+        except Exception as e:
+            self.message.configure(text=f"Erro ao distribuir tarefas: {e}")
+            return
 
-        #item = ListItem(self.tab_info["tab_meta"]["list_container"], distro_info)
-        #self.tab_info["tab_meta"]["list_container"].add_item(item)
-
-        #card = Card(self.tab_info["tab_meta"]["cards_container"], distro_info)
-        #self.tab_info["tab_meta"]["cards_container"].add_card(card)
+        # Persiste os dados
+        self.on_save(self.model_info)
 
 
 class OptionsView(ctk.CTkFrame):
     def __init__(self, parent, **kwargs):
         super().__init__(parent, **kwargs)
 
-        # Configurações
-        self.configure(
-            fg_color="transparent",
-            corner_radius=0
-        )
-
+        self.configure(fg_color="transparent", corner_radius=0)
         self.pack_propagate(False)
+        self.filters = {}
 
         # Dados
         self.sectors: list[Sector] = [s.name for s in Sector.select(Sector.name).order_by(Sector.name)]
@@ -140,166 +171,120 @@ class OptionsView(ctk.CTkFrame):
         self.filters_label = ctk.CTkLabel(self, text="Filtros", font=("Tahoma", 11), anchor="w")
         self.filters_label.pack(side="top", anchor="w", pady=2)
 
-        self.sector_label = ctk.CTkLabel(self, text="setor:", font=("Tahoma", 10), anchor="w")
-        self.sector_label.pack(side="top", anchor="w", padx=5)
-
-        self.sector_combobox = ProComboBox(self, values=self.sectors)
-        self.sector_combobox.pack(side="top", anchor="w", padx=5, pady=2, fill="x")
-        self.sector_combobox.set("Nenhum")
-
-        self.priority_label = ctk.CTkLabel(self, text="prioridade:", font=("Tahoma", 10), anchor="w")
-        self.priority_label.pack(side="top", anchor="w", padx=5)
-
-        self.priority_combobox = ProComboBox(self, values=self.priorities)
-        self.priority_combobox.pack(side="top", anchor="w", padx=5, pady=2, fill="x")
-        self.priority_combobox.set("Nenhum")
-
-        self.company_label = ctk.CTkLabel(self, text="empresa:", font=("Tahoma", 10), anchor="w")
-        self.company_label.pack(side="top", anchor="w", padx=5)
-
-        self.company_combobox = ProComboBox(self, values=self.companies)
-        self.company_combobox.pack(side="top", anchor="w", padx=5, pady=2, fill="x")
-        self.company_combobox.set("Nenhum")
+        self.filter("setor", self.sectors)
+        self.filter("prioridade", self.priorities)
+        self.filter("empresa", self.companies)
 
         self.clean_button = ProButton(self, text="Limpar filtros", height=15, command=self.clean_filters)
         self.clean_button.pack(side="top", anchor="e", padx=5, pady=(10, 0), fill="x")
 
+    def filter(self, label, values):
+        """Adiciona um filtro."""
+        filter_label = ctk.CTkLabel(self, text=f"{label}:", font=("Tahoma", 10), anchor="w")
+        filter_label.pack(side="top", anchor="w", padx=5)
+
+        self.filters[label] = ProComboBox(self, values=values)
+        self.filters[label].pack(side="top", anchor="w", padx=5, pady=2, fill="x")
+        self.filters[label].set("Nenhum")
+
     def get_filters(self):
         """Retorna os filtros selecionados."""
         return {
-            "sector": self.sector_combobox.get(),
-            "priority": self.priority_combobox.get(),
-            "company": self.company_combobox.get()
+            "sector": self.filters["setor"].get(),
+            "priority": self.filters["prioridade"].get(),
+            "company": self.filters["empresa"].get()
         }
 
     def clean_filters(self):
         """Limpa os filtros."""
-        self.sector_combobox.set("Nenhum")
-        self.priority_combobox.set("Nenhum")
-        self.company_combobox.set("Nenhum")
+        for field_filter in self.filters.values():
+            field_filter.set("Nenhum")
 
 
-class PeopleView(ctk.CTkFrame):
-    def __init__(self, parent, **kwargs):
-        super().__init__(parent, **kwargs)
+class ListView(ctk.CTkFrame):
 
-        # Configurações
-        self.configure(
-            fg_color="transparent",
-            corner_radius=0
-        )
+    def __init__(self,
+                 title: str,
+                 itens: list,
+                 model: str,
+                 supported_filters: list=None,
+                 **kwargs):
 
-        # Pessoas
-        self.people_label = ctk.CTkLabel(self, text="Pessoas", font=("Tahoma", 11), anchor="w")
-        self.people_label.pack(side="top", anchor="w", pady=2)
+        super().__init__(**kwargs)
 
-        # Lista de pessoas
-        self.people_list = Person.select()
-        self.people_list_view = ctk.CTkScrollableFrame(self, corner_radius=5, fg_color="#2C2E33", border_width=1, border_color="#777")
-        self.people_list_view._scrollbar.grid_configure(padx=5)
-        self.people_list_view.pack(side="top", fill="both", expand=True)
+        self._itens = itens
+        self._model = model
+        self._supported_filters = supported_filters
+        self.configure(fg_color="transparent", corner_radius=0)
 
-        # Carrega sem filtro inicialmente
-        self.refresh()
-
-    def refresh(self, filter_by: dict = None):
-        # Limpa a lista de pessoas
-        for child in self.people_list_view.winfo_children():
-            child.destroy()
-
-        self.select_all = ProCheckBox(self.people_list_view, text="Selecionar todos", command=self.select_all_people)
-        self.select_all.pack(side="top", anchor="w", padx=5, pady=(5, 0), fill="x")
-
-        # Carrega a lista de pessoas com filtros
-        for person in self.people_list:
-            if filter_by:
-                if filter_by["sector"] != "Nenhum" and filter_by["sector"].lower() != person.sector.name.lower():
-                    continue
-                if filter_by["company"] != "Nenhum" and filter_by["company"].lower() != person.company.lower():
-                    continue
-            item = ProCheckBox(self.people_list_view, text=person.name)
-            item.pack(side="top", anchor="w", padx=5, pady=(5, 0), fill="x")
-
-    def select_all_people(self):
-        for person in self.people_list_view.winfo_children():
-            if person.cget("text") == "Selecionar todos":
-                continue
-            if self.select_all.get() == 0:
-                person.deselect()
-            else:
-                person.select()
-
-    def get_selected_people(self):
-        """Retorna uma lista com as pessoas selecionadas."""
-        selected_people = []
-        for person in self.people_list_view.winfo_children():
-            if person.cget("text") == "Selecionar todos":
-                continue
-            if person.get() == 1:
-                selected_people.append(Person.get_by_name(person.cget("text")))
-
-        return selected_people
-
-
-class TasksView(ctk.CTkFrame):
-    def __init__(self, parent, **kwargs):
-        super().__init__(parent, **kwargs)
-
-        # Configurações
-        self.configure(
-            fg_color="transparent",
-            corner_radius=0
-        )
-
-        # Tarefas
-        self.tasks_label = ctk.CTkLabel(self, text="Tarefas", font=("Tahoma", 11), anchor="w")
+        # Título
+        self.tasks_label = ctk.CTkLabel(self, text=title, font=("Tahoma", 11), anchor="w")
         self.tasks_label.pack(side="top", anchor="w", pady=2)
 
-        # Lista de tarefas
-        self.tasks_list = Task.select()
-        self.tasks_list_view = ctk.CTkScrollableFrame(self, corner_radius=5, fg_color="#2C2E33", border_width=1, border_color="#777")
-        self.tasks_list_view._scrollbar.grid_configure(padx=5)
-        self.tasks_list_view.pack(side="top", fill="both", expand=True)
+        # Frame movimentável
+        self.itens_frame = ctk.CTkScrollableFrame(self, corner_radius=5, fg_color="#2C2E33", border_width=1, border_color="#777")
+        self.itens_frame._scrollbar.grid_configure(padx=5)
+        self.itens_frame.pack(side="top", fill="both", expand=True)
 
-        # Carrega sem filtro inicialmente
+        # Selecionar todos
+        self.select_all = ProCheckBox(self.itens_frame, text="Selecionar todos", command=self.select_all)
+        self.select_all.pack(side="top", anchor="w", padx=5, pady=(5, 0), fill="x")
+
+        # Carrega inicialmente sem filtros
         self.refresh()
 
     def refresh(self, filter_by: dict = None):
-        # Limpa a lista de tarefas
-        for child in self.tasks_list_view.winfo_children():
+
+        # Evita duplicidade de itens
+        for child in self.itens_frame.winfo_children():
+            if child == self.select_all:
+                continue
             child.destroy()
 
-        self.select_all = ProCheckBox(self.tasks_list_view, text="Selecionar todos", command=self.select_all_tasks)
-        self.select_all.pack(side="top", anchor="w", padx=5, pady=(5, 0), fill="x")
-
-        # Carrega a lista de tarefas com filtros
-        for task in self.tasks_list:
+        # Faz a filtragem dos itens com filtros
+        for item in self._itens:
             if filter_by:
-                if filter_by["sector"] != "Nenhum" and filter_by["sector"].lower() != task.sector.name.lower():
-                    continue
-                if filter_by["priority"] != "Nenhum" and filter_by["priority"] != task.priority:
-                    continue
-                if filter_by["company"] != "Nenhum" and filter_by["company"].lower() != task.company.lower():
-                    continue
-            item = ProCheckBox(self.tasks_list_view, text=task.name)
+
+                if "sector" in item:
+                    if filter_by["sector"] != "Nenhum" and filter_by["sector"].lower() != SectorService.get_sector_by_id(item["sector"]).name.lower():
+                        continue
+
+                if "priority" in item:
+                    if filter_by["priority"] != "Nenhum" and filter_by["priority"] != item["priority"]:
+                        continue
+
+                if "company" in item:
+                    if filter_by["company"] != "Nenhum" and filter_by["company"].lower() != item["company"].lower():
+                        continue
+
+                # Tentativa de automatizar a filtragem dos itens
+                # for filter_ in self._supported_filters:
+                #     if filter_ == "sector" and filter_by[filter_] != "Nenhum":
+                #         if filter_by[filter_].lower() != SectorService.get_sector_by_id(item["sector"]):
+                #             continue
+                #     if filter_by[filter_] != "Nenhum" and filter_by[filter_].lower() != item[filter_].lower():
+                #         continue
+
+            item = ProCheckBox(self.itens_frame, text=item["name"])
             item.pack(side="top", anchor="w", padx=5, pady=(5, 0), fill="x")
 
-    def select_all_tasks(self):
-        for task in self.tasks_list_view.winfo_children():
-            if task.cget("text") == "Selecionar todos":
+    def select_all(self):
+        for item in self.itens_frame.winfo_children():
+            if item.cget("text") == "Selecionar todos":
                 continue
             if self.select_all.get() == 0:
-                task.deselect()
+                item.deselect()
             else:
-                task.select()
+                item.select()
 
-    def get_selected_tasks(self):
-        """Retorna uma lista com as tarefas selecionadas."""
-        selected_tasks = []
-        for task in self.tasks_list_view.winfo_children():
-            if task.cget("text") == "Selecionar todos":
-                continue
-            if task.get() == 1:
-                selected_tasks.append(Task.get_by_name(task.cget("text")))
+    def get_selected(self):
+        """Retorna uma lista com os itens selecionados."""
+        children = self.itens_frame.winfo_children()
 
-        return selected_tasks
+        if self._model == "person":
+            return [PersonService.get_person_by_name(item.cget("text")) for item in children if item.cget("text") != "Selecionar todos"]
+
+        elif self._model == "task":
+            return [TaskService.get_task_by_name(item.cget("text")) for item in children if item.cget("text") != "Selecionar todos"]
+
+        return None

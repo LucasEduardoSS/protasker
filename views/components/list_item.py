@@ -17,8 +17,6 @@ class ListItem(CTkFrame):
         self.model_info = model_info
         self._item_info_frame = None
 
-        print(model_info)
-
         # Configuração do card
         self._normal_fg = "#3E4D66"
         self._hover_fg = "#465773"

@@ -1,11 +1,11 @@
 import customtkinter as ctk
-from PIL import Image
 
-IMAGES_PATH = "C:/Users/luedu/Documents/Projetos/Pycharm/ProTasker/images/"
+from utils.image_utils import get_image_as_tkimage
 
 
 class ToolbarBaseButtonView(ctk.CTkButton):
     """ Padroniza a criação de botões para toolbar_left """
+
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
 
@@ -20,54 +20,40 @@ class ToolbarBaseButtonView(ctk.CTkButton):
 
 
 class AddButton(ToolbarBaseButtonView):
-    """ Adiciona um novo registro na aba atual. """
+    """ Define um botão de adicionar um registro. """
+
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
-
-        add_icon = ctk.CTkImage(
-            light_image=Image.open(IMAGES_PATH + "add-icon.png"),
-            dark_image=Image.open(IMAGES_PATH + "add-icon.png"),
-            size=(20, 20)
-        )
 
         self.configure(
             fg_color="transparent",
             text="",
-            image=add_icon,
+            image=get_image_as_tkimage("add-icon.png", 20),
             command=None
         )
         self.pack(side="left", padx=2, pady=2, ipadx=2)
 
 
 class FilterButton(ToolbarBaseButtonView):
-    """ Filtra os registros da aba atual. """
+    """ Define um botão de filtrar registros. """
+
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
-        filter_icon = ctk.CTkImage(
-            light_image=Image.open(IMAGES_PATH + "filter-icon.png"),
-            dark_image=Image.open(IMAGES_PATH + "filter-icon.png"),
-            size=(25, 25)
-        )
 
         self.configure(
             fg_color="transparent",
             text="",
-            image=filter_icon,
+            image=get_image_as_tkimage("filter-icon.png", 20),
             command=None
         )
         self.pack(side="left", padx=2, pady=2, ipadx=2)
 
 
 class ViewModeSwitch(ctk.CTkSegmentedButton):
-    """ Muda a visualização atual da aba."""
+    """ Define o botão de mudança de visualização dos registros."""
+
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
-
-        # Ícones
-        cards_icon = ctk.CTkImage(light_image=Image.open(IMAGES_PATH + "cards-icon.png"),
-                                  dark_image=Image.open(IMAGES_PATH + "cards-icon.png"), size=(25, 25))
-        list_icon = ctk.CTkImage(light_image=Image.open(IMAGES_PATH + "list-icon.png"),
-                                 dark_image=Image.open(IMAGES_PATH + "list-icon.png"), size=(25, 25))
 
         # Configuração
         self.configure(
@@ -84,7 +70,7 @@ class ViewModeSwitch(ctk.CTkSegmentedButton):
         )
 
         # Adiciona os ícones após configuração inicial para evitar fundo branco
-        self._buttons_dict["Cards"].configure(image=cards_icon, fg_color="transparent")
-        self._buttons_dict["Lista"].configure(image=list_icon, fg_color="transparent")
+        self._buttons_dict["Cards"].configure(image=get_image_as_tkimage("cards-icon.png", 25), fg_color="transparent")
+        self._buttons_dict["Lista"].configure(image=get_image_as_tkimage("list-icon.png", 25), fg_color="transparent")
 
         self.pack(side="right", padx=2, pady=2, ipadx=20)

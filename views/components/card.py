@@ -1,8 +1,9 @@
 import customtkinter as ctk
 
+from models.distribution_model import Distribution
 from views.components.edit_button import EditButton
 from views.windows.edit_view import EditView
-
+from views.windows.distribution_view import DistributionView
 from utils.widgets_utils import format_card_info
 from utils.widgets_utils import propagate_hover_bind
 
@@ -68,7 +69,7 @@ class Card(ctk.CTkFrame):
         card_info_frame.configure(fg_color="transparent")
         self._card_info_frame = card_info_frame
 
-        for key, value in fields.items():
+        for index, (key, value) in enumerate(fields.items()):
             # Ignora campos com valores vazios
             if value is None or value == "":
                 continue
@@ -103,11 +104,14 @@ class Card(ctk.CTkFrame):
 
     def edit_record(self):
         """Abre uma janela de edição do registro."""
-        EditView(
-            model_cls=self.model,
-            model_info=self.model_info,
-            on_save=self._apply_update
-        )
+
+        if self.model == Distribution:
+            DistributionView(model_info=self.model_info,
+                             on_save=self._apply_update)
+        else:
+            EditView(model_cls=self.model,
+                     model_info=self.model_info,
+                     on_save=self._apply_update)
 
     def _apply_update(self, updated_row: dict):
         """Chamado pela janela de edição após um save sucedido."""
