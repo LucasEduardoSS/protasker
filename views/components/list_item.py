@@ -32,9 +32,6 @@ class ListItem(CTkFrame):
         else:
             raise ValueError("model_info cannot be None")
 
-        # Propaga o hover bind para todos os widgets do item
-        propagate_hover_bind(self, self._hover_fg, self._normal_fg)
-
     def load_fields(self, fields: dict):
         """Carrega os campos do card com os dados do registro."""
 
@@ -74,6 +71,9 @@ class ListItem(CTkFrame):
                 font=("Tahoma", 11)
             )
             value_label.pack(side="left", padx=(0, 10))
+
+        # Propaga o hover bind para todos os widgets do item
+        propagate_hover_bind(self, self._hover_fg, self._normal_fg)
 
     def edit_record(self):
         """Abre uma janela de edição do registro."""

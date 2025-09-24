@@ -16,11 +16,11 @@ class ProTaskerView(CTk):
         self.iconbitmap("images/protasker_icon.ico")
 
         self.main_meta = {
-            "menu": Menu(self),
+            #"menu": Menu(self),
             "sidebar": SidebarView(self),
             "workspace": WorkspaceView(self)
         }
-        self.configure(menu=self.main_meta["menu"])
+        #self.configure(menu=self.main_meta["menu"])
 
         # agenda para rodar após o pack/layout
         self.after(0, center_window(self, (1200, 700)))

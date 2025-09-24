@@ -1,6 +1,7 @@
 import customtkinter as ctk
 
 from utils.image_utils import get_image_as_tkimage
+from views.components.tooltip import Tooltip
 
 
 class SidebarView(ctk.CTkFrame):
@@ -23,7 +24,7 @@ class SidebarView(ctk.CTkFrame):
 
         # Define os botões
         buttons_config = [
-            ("clarify-filled-icon.png", "detalhes", "Detalhes"),
+            ("list-icon.png", "detalhes", "Detalhes"),
             ("checklist-icon.png", "controle", "Controle"),
             ("hand-raised-icon.png", "primeiros-passos", "Primeiros Passos")
         ]
@@ -49,6 +50,7 @@ class SidebarView(ctk.CTkFrame):
             command=lambda: self._toggle_tab(tab_id)
         )
         button.pack(pady=(2, 0))
+        Tooltip(button, tab_id)
         
         self.tab_buttons[tab_id] = button
 
@@ -79,3 +81,17 @@ class SidebarView(ctk.CTkFrame):
                 button.configure(fg_color=self.active_fg, hover_color=self.active_hover)
             else:
                 button.configure(fg_color=self.inactive_fg, hover_color=self.inactive_hover)
+
+    def show_details(self, item_info: dict):
+        """
+        Mostra a aba de detalhes atualizada com as informações do item selecionado.
+        """
+
+        # Troca para a aba "detalhes"
+        if hasattr(self.master, "show_tab"):
+            self.master.show_tab("detalhes")
+
+        # Atualiza a aba "detalhes" com as informações do item
+        details_tab = self.master.tabs.get("detalhes")
+        if details_tab and hasattr(details_tab, "load_details"):
+            details_tab.load_details(item_info)

@@ -1,7 +1,8 @@
 from dataclasses import dataclass, field
-from typing import Iterable, List, Tuple
+from typing import List, Tuple
 from contextlib import contextmanager
 from random import shuffle
+from peewee import IntegrityError
 
 # Modelos Peewee
 from models.person_model import Person
@@ -94,6 +95,7 @@ def distribute_tasks_fair(
                     Assignment.get_or_create(distro=distro, person=person, task=task)
         except Exception:
             db.rollback()
-            raise
+            raise IntegrityError(f"Tarefa '{task}' já distribuida.")
+
 
     return plan

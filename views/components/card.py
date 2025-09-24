@@ -1,11 +1,12 @@
 import customtkinter as ctk
 
 from models.distribution_model import Distribution
-from views.components.edit_button import EditButton
 from views.windows.edit_view import EditView
 from views.windows.distribution_view import DistributionView
+from views.components.tooltip import Tooltip
 from utils.widgets_utils import format_card_info
 from utils.widgets_utils import propagate_hover_bind
+from utils.image_utils import get_image_as_tkimage
 
 
 class Card(ctk.CTkFrame):
@@ -16,7 +17,6 @@ class Card(ctk.CTkFrame):
 
         # Informações do card
         self.model_info = model_info
-        self.model = master.model
 
         # Configuração do card
         self._normal_fg = "#3E4D66"
@@ -38,8 +38,14 @@ class Card(ctk.CTkFrame):
         self.grid_propagate(False)
 
         # Botão de editar registro
-        edit_button = EditButton(self, text="", command=self.edit_record)
+        edit_button = CardButton(self, icon=get_image_as_tkimage("edit-icon.png", 20), command=self._edit_record)
         edit_button.grid(row=0, column=1, padx=5, pady=5, sticky="n")
+        Tooltip(edit_button, "Editar registro")
+
+        # Botão de ver detalhes
+        self.details_button = CardButton(self, icon=get_image_as_tkimage("list-icon.png", 20), command=None)
+        self.details_button.grid(row=0, column=1, padx=5, pady=(40, 5), sticky="n")
+        Tooltip(self.details_button, "Ver detalhes")
 
         # Frame que conterá os campos (reutilizado)
         self._card_info_frame = None
@@ -49,9 +55,6 @@ class Card(ctk.CTkFrame):
             self.load_fields(model_info)
         else:
             raise ValueError("model_info cannot be None")
-
-        # Propaga o hover bind para todos os widgets do item
-        propagate_hover_bind(self, self._hover_fg, self._normal_fg)
 
     def load_fields(self, fields: dict):
         """Carrega os campos do card com os dados de um registro."""
@@ -65,7 +68,7 @@ class Card(ctk.CTkFrame):
 
         # Cria frame para os campos
         card_info_frame = ctk.CTkFrame(self)
-        card_info_frame.grid(row=0, column=0, padx=5, pady=5, ipadx=2, ipady=2, sticky="nsew")
+        card_info_frame.grid(row=0, rowspan=2, column=0, padx=5, pady=5, ipadx=2, ipady=2, sticky="nsew")
         card_info_frame.configure(fg_color="transparent")
         self._card_info_frame = card_info_frame
 
@@ -102,18 +105,41 @@ class Card(ctk.CTkFrame):
             )
             lb.pack(side="top", anchor="w", padx=5, pady=4, fill="x", expand=True)
 
-    def edit_record(self):
+        # Propaga o hover bind para todos os widgets do item
+        propagate_hover_bind(self, self._hover_fg, self._normal_fg)
+
+    def _edit_record(self):
         """Abre uma janela de edição do registro."""
 
-        if self.model == Distribution:
-            DistributionView(model_info=self.model_info,
-                             on_save=self._apply_update)
+        if self.master.model == Distribution:
+            DistributionView (
+                model_info=self.model_info,
+                on_save=self._apply_update
+            )
         else:
-            EditView(model_cls=self.model,
-                     model_info=self.model_info,
-                     on_save=self._apply_update)
+            EditView (
+                model_cls=self.master.model,
+                model_info=self.model_info,
+                on_save=self._apply_update
+            )
 
     def _apply_update(self, updated_row: dict):
         """Chamado pela janela de edição após um save sucedido."""
         self.model_info = updated_row
         self.load_fields(updated_row)
+
+
+class CardButton(ctk.CTkButton):
+    def __init__(self, master, icon, command, **kwargs):
+        super().__init__(master, **kwargs)
+
+        self.configure(
+            text="",
+            width=30,
+            height=20,
+            font=("Tahoma", 11),
+            image=icon,
+            fg_color="transparent",
+            hover_color="#3E4D66",
+            command=command
+        )

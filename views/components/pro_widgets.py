@@ -7,7 +7,7 @@ class ProButton(ctk.CTkButton):
 
         self.configure(
             font=("Tahoma", 11),
-            corner_radius=0,
+            corner_radius=5,
             border_width=0,
             fg_color="#2C2E33",
             hover_color="#3E4D66"
@@ -19,13 +19,13 @@ class ProComboBox(ctk.CTkComboBox):
         super().__init__(master, **kwargs)
 
         self.configure(
-            height=20,
+            height=25,
             values=values,
             fg_color="#2C2E33",
             font=("Tahoma", 11),
             dropdown_font=("Tahoma", 11),
             dropdown_fg_color="#2C2E33",
-            corner_radius=0
+            corner_radius=5
         )
 
         self._border_width = 0

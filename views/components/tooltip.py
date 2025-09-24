@@ -36,6 +36,7 @@ class Tooltip:
 
     def _show_tooltip(self, event):
         """Cria e exibe o tooltip."""
+
         # Verifica se o tooltip já existe
         if self._tooltip:
             return
@@ -43,7 +44,19 @@ class Tooltip:
         # Cria uma nova janela do tipo Toplevel
         self._tooltip = ctk.CTkToplevel(self.widget)
         self._tooltip.wm_overrideredirect(True)  # Remove a barra de título
-        self._tooltip.geometry(f"+{event.x_root + self.offset[0]}+{event.y_root + self.offset[1]}")  # Posiciona o tooltip
+
+        # Calcula as coordenadas para posicionar o tooltip à direita do widget
+        widget_x = self.widget.winfo_rootx()
+        widget_y = self.widget.winfo_rooty()
+        widget_width = self.widget.winfo_width()
+        widget_height = self.widget.winfo_height()
+
+        # Posição à direita do widget, centralizado verticalmente
+        tooltip_x = widget_x + widget_width + self.offset[0]
+        tooltip_y = widget_y + (widget_height // 2)
+
+        # Define a geometria do tooltip
+        self._tooltip.geometry(f"+{tooltip_x}+{tooltip_y}")
 
         # Adiciona o label do tooltip
         tooltip_label = ctk.CTkLabel(
@@ -57,6 +70,7 @@ class Tooltip:
 
     def _hide_tooltip(self, event):
         """Esconde e destrói o tooltip."""
+
         self._cancel_tooltip()  # Cancela a criação agendada, se existir
         if self._tooltip:
             self._tooltip.destroy()
@@ -64,6 +78,7 @@ class Tooltip:
 
     def _cancel_tooltip(self):
         """Cancela o evento de exibição agendado."""
+
         if hasattr(self, "_tooltip_id") and self._tooltip_id is not None:
             try:
                 self.widget.after_cancel(self._tooltip_id)
@@ -74,6 +89,7 @@ class Tooltip:
 
     def destroy(self):
         """Remove o tooltip e desassocia os eventos."""
+
         self._hide_tooltip(None)
         if self._hover_event:
             self.widget.unbind("<Enter>", self._hover_event)

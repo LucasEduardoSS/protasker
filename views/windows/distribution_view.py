@@ -1,16 +1,16 @@
 import customtkinter as ctk
 from tkinter import PanedWindow
+from peewee import IntegrityError
 
 from functions.distribution_algorithms import distribute_tasks_fair
+from utils.gui_utils import center_window
+
 from services.assignment_service import AssignmentService
 from services.task_service import TaskService
 from services.sector_service import SectorService
-from utils.gui_utils import center_window
 from services.person_service import PersonService
-from models.person_model import Person
-from models.task_model import Task
-from models.sector_model import Sector
 from services.distribution_service import DistributionService
+
 from views.components.pro_widgets import ProComboBox, ProCheckBox, ProButton
 from views.components.pro_labeled_widgets import LabeledEntryView
 
@@ -32,10 +32,10 @@ class DistributionView(ctk.CTkToplevel):
         self.configure(fg_color="#2E333C")
         self.iconbitmap("images/protasker_icon.ico")
         self.title('Geração de Distribuição')
-        self.minsize(600, 400)
+        self.minsize(700, 500)
 
         # Centraliza a janela
-        center_window(self, (650, 500))
+        center_window(self, (700, 500))
 
         # Mantém sobre a janela principal
         self.grab_set()
@@ -44,8 +44,8 @@ class DistributionView(ctk.CTkToplevel):
 
         # Título da distribuição
         self.distro_title = LabeledEntryView(self, "Título", fg_color="#2C2E33")
-        self.distro_title.entry.configure(placeholder_text=model_info["title"] if model_info else "Distribuição")
-        self.distro_title.pack(side="top", anchor="w", padx=(0, 10), pady=5, fill="x")
+        self.distro_title.entry.insert(0, model_info["title"] if model_info else "Distribuição")
+        self.distro_title.pack(side="top", anchor="w", padx=10, pady=10, fill="x")
 
         # Área de trabalho
         self.workspace = PanedWindow(
@@ -78,8 +78,8 @@ class DistributionView(ctk.CTkToplevel):
         )
 
         # Adiciona as sessões na workspace
-        self.workspace.add(self.options, width=200, padx=10)
-        self.workspace.add(self.people, width=250)
+        self.workspace.add(self.options, width=225, padx=10)
+        self.workspace.add(self.people, width=270)
         self.workspace.add(self.tasks, width=250, padx=10)
 
         # Botão distribuir
@@ -109,8 +109,11 @@ class DistributionView(ctk.CTkToplevel):
     def generate(self):
         """Gera a distribuição de tarefas."""
 
+        selected_people = self.people.get_selected()
+        selected_tasks = self.tasks.get_selected()
+
         # Interrompe a distribuição caso nenhum registro seja selecionado
-        if len(self.people.get_selected()) == 0 or len(self.tasks.get_selected()) == 0:
+        if  not selected_people or not selected_tasks:
             self.message.configure(text="Selecione pelo menos uma pessoa e uma tarefa para distribuir.")
             return
 
@@ -123,13 +126,13 @@ class DistributionView(ctk.CTkToplevel):
         if self.model_info:
             self.model_info.update({
                 "title": self.distro_title.get().strip(),
-                "total_tasks": len(self.tasks.get_selected()),
+                "total_tasks": len(selected_tasks),
                 "finished_tasks": 0
             })
         else:
             self.model_info = {
                 "title": self.distro_title.get().strip(),
-                "total_tasks": len(self.tasks.get_selected()),
+                "total_tasks": len(selected_tasks),
                 "finished_tasks": 0
             }
 
@@ -138,15 +141,14 @@ class DistributionView(ctk.CTkToplevel):
             distro = DistributionService.get_distribution_by_id(self.model_info["id"])
             assignments = AssignmentService.get_assignment_by_distro(distro)
             for assignment in assignments:
-                if assignment.person not in self.people.get_selected():
+                if assignment.person not in selected_people:
                     AssignmentService.delete_assignment(assignment)
         else:
             distro = DistributionService.create_distribution(self.model_info)
 
-        # Distribui as tarefas
         try:
-            buckets = distribute_tasks_fair(distro, self.people.get_selected(), self.tasks.get_selected())
-        except Exception as e:
+            buckets = distribute_tasks_fair(distro, selected_people, selected_tasks)
+        except IntegrityError as e:
             self.message.configure(text=f"Erro ao distribuir tarefas: {e}")
             return
 
@@ -158,33 +160,33 @@ class OptionsView(ctk.CTkFrame):
     def __init__(self, parent, **kwargs):
         super().__init__(parent, **kwargs)
 
-        self.configure(fg_color="transparent", corner_radius=0)
+        self.configure(fg_color="#3E4D66", corner_radius=5, border_width=1)
         self.pack_propagate(False)
         self.filters = {}
 
         # Dados
-        self.sectors: list[Sector] = [s.name for s in Sector.select(Sector.name).order_by(Sector.name)]
-        self.priorities: list[Task] = [t.priority for t in Task.select(Task.priority).order_by(Task.priority)]
-        self.companies: list[str] = [p.company for p in Person.select(Person.company).order_by(Person.company)]
+        self.sectors: list = [sector["name"] for sector in SectorService.get_all_sectors()]
+        self.priorities: list = list(set([task["priority"] for task in TaskService.get_all_tasks()]))
+        self.companies: list = list(set([person["company"] for person in PersonService.get_all_people()]))
 
         # Filtros
         self.filters_label = ctk.CTkLabel(self, text="Filtros", font=("Tahoma", 11), anchor="w")
-        self.filters_label.pack(side="top", anchor="w", pady=2)
+        self.filters_label.pack(side="top", anchor="w", pady=2, padx=(10, 0))
 
         self.filter("setor", self.sectors)
         self.filter("prioridade", self.priorities)
         self.filter("empresa", self.companies)
 
-        self.clean_button = ProButton(self, text="Limpar filtros", height=15, command=self.clean_filters)
-        self.clean_button.pack(side="top", anchor="e", padx=5, pady=(10, 0), fill="x")
+        self.clean_button = ProButton(self, text="Limpar filtros", height=25, corner_radius=5, command=self.clean_filters)
+        self.clean_button.pack(side="bottom", padx=10, pady=10, fill="x")
 
     def filter(self, label, values):
         """Adiciona um filtro."""
         filter_label = ctk.CTkLabel(self, text=f"{label}:", font=("Tahoma", 10), anchor="w")
-        filter_label.pack(side="top", anchor="w", padx=5)
+        filter_label.pack(side="top", anchor="w", padx=10)
 
-        self.filters[label] = ProComboBox(self, values=values)
-        self.filters[label].pack(side="top", anchor="w", padx=5, pady=2, fill="x")
+        self.filters[label] = ProComboBox(self, height=30, values=values, corner_radius=5)
+        self.filters[label].pack(side="top", anchor="w", padx=10, pady=2, fill="x")
         self.filters[label].set("Nenhum")
 
     def get_filters(self):
@@ -215,16 +217,18 @@ class ListView(ctk.CTkFrame):
         self._itens = itens
         self._model = model
         self._supported_filters = supported_filters
-        self.configure(fg_color="transparent", corner_radius=0)
+        self.configure(fg_color="#3E4D66", corner_radius=5, border_width=1)
+        self.pack_propagate(False)
 
         # Título
         self.tasks_label = ctk.CTkLabel(self, text=title, font=("Tahoma", 11), anchor="w")
-        self.tasks_label.pack(side="top", anchor="w", pady=2)
+        self.tasks_label.pack(side="top", anchor="w", pady=2, padx=(10, 0))
 
         # Frame movimentável
-        self.itens_frame = ctk.CTkScrollableFrame(self, corner_radius=5, fg_color="#2C2E33", border_width=1, border_color="#777")
+        self.itens_frame = ctk.CTkScrollableFrame(self, corner_radius=5, fg_color="transparent", border_width=0)  #3E4D66
         self.itens_frame._scrollbar.grid_configure(padx=5)
-        self.itens_frame.pack(side="top", fill="both", expand=True)
+        self.itens_frame.configure(scrollbar_fg_color="transparent", scrollbar_button_color="#2E333C")
+        self.itens_frame.pack(side="top", padx=0, pady=5, fill="both", expand=True)
 
         # Selecionar todos
         self.select_all = ProCheckBox(self.itens_frame, text="Selecionar todos", command=self.select_all)

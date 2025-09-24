@@ -20,11 +20,6 @@ class CardContainer(ctk.CTkScrollableFrame):
         self._relayout_after_id = None
         self.bind("<Configure>", self._on_resize, add="+")
 
-    def load_cards(self, model: list):
-        """ Carrega os cards do container com os dados do modelo """
-        for data in model:
-            self.cards.append(Card(self, data))
-
     def refresh_cards(self, data: list):
         """ Atualiza os campos dos cards do container. """
         for index, card in enumerate(self.cards):
@@ -33,7 +28,9 @@ class CardContainer(ctk.CTkScrollableFrame):
 
     def add_card(self, card_info: dict):
         """ Adiciona um novo card ao container """
-        self.cards.append(Card(self, card_info))
+        card = Card(self, card_info)
+        card.details_button.configure(command=lambda: self.master.master.master.master.show_item_details(card_info))
+        self.cards.append(card)
         self.relayout()
 
     def _on_resize(self, event):

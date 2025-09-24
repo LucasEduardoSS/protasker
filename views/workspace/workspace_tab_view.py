@@ -60,20 +60,15 @@ class WorkspaceTabView(ctk.CTkTabview):
         # Toolbar (topo da tab)
         toolbar = WorkspaceToolbarView(tab, name, fg_color=self.cget("bg_color"))
 
-        # Área de conteúdo (abaixo da toolbar)
-        content = ctk.CTkFrame(tab, fg_color="transparent")
-        content.pack(side="top", pady=(10, 0), fill="both", expand=True)
-
         # Containers para modos de visualização
-        cards_container = CardContainer(content, model)
-        list_container = ListContainer(content, model)
+        cards_container = CardContainer(tab, model)
+        list_container = ListContainer(tab, model)
 
         # Guarda metadados da tab
         self.tabs_meta[name].update({
             "toolbar": toolbar,
             "toolbar_left": toolbar.toolbar_left,
             "toolbar_right": toolbar.toolbar_right,
-            "content": content,
             "cards_container": cards_container,
             "list_container": list_container,
             "view_switch": toolbar.view_mode_switch_btn
@@ -157,3 +152,14 @@ class WorkspaceTabView(ctk.CTkTabview):
     def add_distribution(self):
         """Abre uma janela de distribuição de tarefas."""
         DistributionView(on_save=lambda info: self.load_record("Distribuições", info))
+
+    def show_item_details(self, item_info: dict):
+        """
+        Lida com a seleção de um item (Card ou ListItem) e exibe a aba de detalhes com as informações.
+        """
+        sidebar =  self.master.master.main_meta["sidebar"]
+
+        if sidebar.active_tab_id != "detalhes":
+            self.master.master.main_meta["sidebar"].tab_buttons["detalhes"].invoke()
+
+        self.master.sidebar_tabs.tabs["detalhes"].load_details(item_info)
