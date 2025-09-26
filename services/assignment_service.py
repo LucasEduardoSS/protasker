@@ -17,6 +17,14 @@ class AssignmentService:
         return Assignment.select().where(Assignment.distro == distro_id)
 
     @staticmethod
+    def get_assignment_by_person(person_id: int):
+        return Assignment.select().where(Assignment.person == person_id)
+
+    @staticmethod
+    def get_assignment_by_task(task_id: int):
+        return Assignment.select().where(Assignment.task == task_id)
+
+    @staticmethod
     def create_assignment(data: dict) -> Assignment:
         assignment = Assignment(**data)
         assignment.save()

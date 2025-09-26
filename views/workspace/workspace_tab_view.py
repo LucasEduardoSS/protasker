@@ -153,7 +153,7 @@ class WorkspaceTabView(ctk.CTkTabview):
         """Abre uma janela de distribuição de tarefas."""
         DistributionView(on_save=lambda info: self.load_record("Distribuições", info))
 
-    def show_item_details(self, item_info: dict):
+    def show_item_details(self, model, item_info: dict):
         """
         Lida com a seleção de um item (Card ou ListItem) e exibe a aba de detalhes com as informações.
         """
@@ -162,4 +162,4 @@ class WorkspaceTabView(ctk.CTkTabview):
         if sidebar.active_tab_id != "detalhes":
             self.master.master.main_meta["sidebar"].tab_buttons["detalhes"].invoke()
 
-        self.master.sidebar_tabs.tabs["detalhes"].load_details(item_info)
+        self.master.sidebar_tabs.tabs["detalhes"].load_details(model, item_info)

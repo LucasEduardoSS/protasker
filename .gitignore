@@ -16,3 +16,7 @@
 /dist/main/main.exe
 /dist
 /build
+views/sidebar/tabs/__pycache__/details_tab_view.cpython-313.pyc
+services/__pycache__/assignment_service.cpython-313.pyc
+services/__pycache__/person_service.cpython-313.pyc
+services/__pycache__/task_service.cpython-313.pyc

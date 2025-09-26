@@ -1,8 +1,10 @@
 import customtkinter as ctk
+from peewee import IntegrityError
 
 from models.distribution_model import Distribution
 from views.windows.edit_view import EditView
 from views.windows.distribution_view import DistributionView
+from views.windows.alert_view import AlertView
 from views.components.tooltip import Tooltip
 from utils.widgets_utils import format_card_info
 from utils.widgets_utils import propagate_hover_bind
@@ -44,8 +46,13 @@ class Card(ctk.CTkFrame):
 
         # Botão de ver detalhes
         self.details_button = CardButton(self, icon=get_image_as_tkimage("list-icon.png", 20), command=None)
-        self.details_button.grid(row=0, column=1, padx=5, pady=(40, 5), sticky="n")
+        self.details_button.grid(row=0, column=1, padx=5, pady=(35, 5), sticky="n")
         Tooltip(self.details_button, "Ver detalhes")
+
+        # Botão de deletar registro
+        self.delete_button = CardButton(self, icon=get_image_as_tkimage("delete-icon.png", 20), command=None)
+        self.delete_button.grid(row=0, column=1, padx=5, pady=(65, 5), sticky="n")
+        Tooltip(self.delete_button, "Deletar registro")
 
         # Frame que conterá os campos (reutilizado)
         self._card_info_frame = None
@@ -67,9 +74,10 @@ class Card(ctk.CTkFrame):
         fields = format_card_info(fields)
 
         # Cria frame para os campos
-        card_info_frame = ctk.CTkFrame(self)
-        card_info_frame.grid(row=0, rowspan=2, column=0, padx=5, pady=5, ipadx=2, ipady=2, sticky="nsew")
+        card_info_frame = ctk.CTkFrame(self, height=self.cget("height") - 15)
+        card_info_frame.grid(row=0, column=0, padx=5, pady=5, ipadx=2, ipady=2, sticky="nsew")
         card_info_frame.configure(fg_color="transparent")
+        card_info_frame.pack_propagate(False)
         self._card_info_frame = card_info_frame
 
         for index, (key, value) in enumerate(fields.items()):
@@ -91,7 +99,7 @@ class Card(ctk.CTkFrame):
                 anchor="w",
                 justify="left",
             )
-            lb.pack(side="top", anchor="w", padx=5, pady=(5, 0), fill="x", expand=True)
+            lb.pack(side="top", anchor="w", padx=5, pady=(5, 0), fill="x")
 
             # Valor do campo
             lb = ctk.CTkLabel(
@@ -103,7 +111,7 @@ class Card(ctk.CTkFrame):
                 anchor="w",
                 justify="left",
             )
-            lb.pack(side="top", anchor="w", padx=5, pady=4, fill="x", expand=True)
+            lb.pack(side="top", anchor="w", padx=5, pady=4, fill="x")
 
         # Propaga o hover bind para todos os widgets do item
         propagate_hover_bind(self, self._hover_fg, self._normal_fg)
@@ -127,6 +135,26 @@ class Card(ctk.CTkFrame):
         """Chamado pela janela de edição após um save sucedido."""
         self.model_info = updated_row
         self.load_fields(updated_row)
+
+    def remove_record(self, model):
+        alert_window = AlertView(self, "Alerta", "Tem certeza que deseja deletar esse registro?")
+
+        def on_confirm():
+            try:
+                model.delete().where(model.id == self.model_info["id"]).execute()
+            except IntegrityError:
+                alert_window.message_label.configure(text="Alerta: Este registro possui registros vinculados ativos.")
+            except Exception as e:
+                alert_window.message_label.configure(text=f"Erro desconhecido ao deletar registro: {e}")
+            else:
+                alert_window.destroy()
+                self.master.remove_card(self)
+
+        def on_cancel():
+            alert_window.destroy()
+
+        alert_window.confirm_button.configure(command=on_confirm)
+        alert_window.cancel_button.configure(command=on_cancel)
 
 
 class CardButton(ctk.CTkButton):

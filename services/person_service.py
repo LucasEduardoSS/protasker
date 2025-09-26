@@ -1,4 +1,5 @@
 from models.person_model import Person
+from models.assignment_model import Assignment
 
 
 class PersonService:
@@ -15,6 +16,21 @@ class PersonService:
     @staticmethod
     def get_person_by_name(name: str):
         return Person.get_or_none(Person.name == name)
+
+    @staticmethod
+    def get_people_by_sector(sector_name: str):
+        return list(Person.select().where(Person.sector == sector_name).dicts())
+
+    @staticmethod
+    def get_people_by_task(task_id: int):
+        from peewee import JOIN
+
+        people = (
+            Person.select()
+            .join(Assignment, JOIN.INNER, on=(Assignment.person == Person.id))
+            .where(Assignment.task == task_id)
+        )
+        return list(people.dicts())
 
     @staticmethod
     def create_person(data: dict):

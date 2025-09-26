@@ -27,10 +27,15 @@ class CardContainer(ctk.CTkScrollableFrame):
             card.model_info = data[index]
 
     def add_card(self, card_info: dict):
-        """ Adiciona um novo card ao container """
+        """ Adiciona um novo card ao container. """
         card = Card(self, card_info)
-        card.details_button.configure(command=lambda: self.master.master.master.master.show_item_details(card_info))
+        card.details_button.configure(command=lambda: self.master.master.master.master.show_item_details(self.model, card_info))
+        card.delete_button.configure(command=lambda: card.remove_record(self.model))
         self.cards.append(card)
+        self.relayout()
+
+    def remove_card(self, card):
+        self.cards.remove(card)
         self.relayout()
 
     def _on_resize(self, event):
@@ -40,7 +45,7 @@ class CardContainer(ctk.CTkScrollableFrame):
         self._relayout_after_id = self.after(60, self.relayout)
 
     def relayout(self):
-        """ Recalcula layout do container de cards """
+        """ Recalcula layout do container de cards. """
         self._relayout_after_id = None
         container_width = self.winfo_width()
 

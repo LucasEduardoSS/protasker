@@ -37,7 +37,7 @@ class TaskService:
         query.execute()
 
     @staticmethod
-    def get_completed_tasks_by_distro(distro_id: int):
+    def get_completed_tasks_by_distro(distro_id: int) -> list[dict]:
         from peewee import JOIN
 
         # Junção entre Assignment e Task, filtrando pela distribuição especificada e status de tarefa "Concluído"
@@ -47,6 +47,28 @@ class TaskService:
             .where((Assignment.distro_id == distro_id) & (Task.status == "Concluída"))
         )
         return list(completed_tasks.dicts())
+
+    @staticmethod
+    def get_completed_tasks_by_person(person_id: int) -> list[dict]:
+        from peewee import JOIN
+
+        completed_tasks = (
+            Task.select()
+            .join(Assignment, JOIN.INNER, on=(Assignment.task == Task.id))
+            .where((Assignment.person == person_id) & (Task.status == "Concluída"))
+        )
+        return list(completed_tasks.dicts())
+
+    @staticmethod
+    def get_tasks_by_person(person_id: int) -> list[dict]:
+        from peewee import JOIN
+
+        tasks = (
+            Task.select()
+            .join(Assignment, JOIN.INNER, on=(Assignment.task == Task.id))
+            .where(Assignment.person == person_id)
+        )
+        return list(tasks.dicts())
 
     @staticmethod
     def get_completed_tasks_by_sector(sector_id: int):
@@ -67,5 +89,18 @@ class TaskService:
                 .join(Assignment, JOIN.INNER, on=(Assignment.task == Task.id))
                 .where(Assignment.id.is_null(False))
                 .dicts()  # Retorna os resultados como dicionários
+        )
+        return list(assigned_tasks)
+
+    @staticmethod
+    def get_assigned_tasks_by_sector(sector_id: int):
+        from models.assignment_model import Assignment
+        from peewee import JOIN
+
+        assigned_tasks = (
+            Task.select(Task.id, Task.name, Task.status)
+                .join(Assignment, JOIN.INNER, on=(Assignment.task == Task.id))
+                .where(Assignment.id.is_null(False) & (Task.sector == sector_id))
+                .dicts()
         )
         return list(assigned_tasks)

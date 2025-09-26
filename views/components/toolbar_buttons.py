@@ -43,7 +43,7 @@ class FilterButton(ToolbarBaseButtonView):
         self.configure(
             fg_color="transparent",
             text="",
-            image=get_image_as_tkimage("filter-icon.png", 20),
+            image=get_image_as_tkimage("filter-icon.png", 25),
             command=None
         )
         self.pack(side="left", padx=2, pady=2, ipadx=2)
