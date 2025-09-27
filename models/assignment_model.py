@@ -13,7 +13,7 @@ class Assignment(BaseModel):
     Campos: Distribuição, Pessoa e Tarefa.
     """
 
-    distro = ForeignKeyField(Distribution, backref="assignments")
+    distro = ForeignKeyField(Distribution, backref="assignments", on_delete="CASCADE")
     person = ForeignKeyField(Person, backref="assignments")
     task = ForeignKeyField(Task, backref="assignments")
 

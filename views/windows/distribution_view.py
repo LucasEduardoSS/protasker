@@ -32,10 +32,10 @@ class DistributionView(ctk.CTkToplevel):
         self.configure(fg_color="#2E333C")
         self.iconbitmap("images/protasker_icon.ico")
         self.title('Geração de Distribuição')
-        self.minsize(700, 500)
+        self.minsize(680, 480)
 
         # Centraliza a janela
-        center_window(self, (700, 500))
+        center_window(self, (680, 480))
 
         # Mantém sobre a janela principal
         self.grab_set()
@@ -45,7 +45,7 @@ class DistributionView(ctk.CTkToplevel):
         # Título da distribuição
         self.distro_title = LabeledEntryView(self, "Título", fg_color="#2C2E33")
         self.distro_title.entry.insert(0, model_info["title"] if model_info else "Distribuição")
-        self.distro_title.pack(side="top", anchor="w", padx=10, pady=10, fill="x")
+        self.distro_title.grid(row=0, column=0, columnspan=3, padx=10, pady=(15, 5), sticky="new") #pack(side="top", anchor="w", padx=10, pady=10, fill="x")
 
         # Área de trabalho
         self.workspace = PanedWindow(
@@ -58,7 +58,8 @@ class DistributionView(ctk.CTkToplevel):
             showhandle=False,
             opaqueresize=False
         )
-        self.workspace.pack(side="top", fill="both", expand=True)
+        #self.workspace.pack(side="top", fill="both", expand=True)
+        self.workspace.grid(row=1, column=0, columnspan=3, pady=5, padx=(5, 0), sticky="nsew")
 
         # Sessões da área de trabalho
         self.options = OptionsView(self.workspace)
@@ -78,22 +79,24 @@ class DistributionView(ctk.CTkToplevel):
         )
 
         # Adiciona as sessões na workspace
-        self.workspace.add(self.options, width=225, padx=10)
-        self.workspace.add(self.people, width=270)
-        self.workspace.add(self.tasks, width=250, padx=10)
+        self.workspace.add(self.options, height=450,  width=225, padx=10)
+        self.workspace.add(self.people, height=450, width=270)
+        self.workspace.add(self.tasks, height=450, width=250, padx=10)
 
         # Botão distribuir
         self.generate_button = ProButton(self, text="Distribuir", command=self.generate)
-        self.generate_button.pack(side="top", anchor="e", padx=(0, 10), pady=5)
+        #self.generate_button.pack(side="top", anchor="e", padx=(0, 10), pady=5)
+        self.generate_button.grid(row=2, column=2, padx=10, pady=5, sticky="e")
 
         self.message = ctk.CTkLabel(self, text="Títule a distribuição e selecione as pessoas e tarefas", font=("Tahoma", 11))
-        self.message.pack(side="top", anchor="w", padx=5, pady=0)
+        #self.message.pack(side="top", anchor="w", padx=5, pady=0)
+        self.message.grid(row=2, column=0, columnspan=2, padx=(15, 10), pady=(0, 5), sticky="w")
 
         # Conectar callbacks que dependem da instância
         self.options.filters["setor"].configure(command=self._on_filters_changed)
         self.options.filters["prioridade"].configure(command=self._on_filters_changed)
         self.options.filters["empresa"].configure(command=self._on_filters_changed)
-        self.options.clean_button.configure(command=self._on_filter_clear)
+        self.options.clean_button.configure(command=self._on_filter_clear, border_color="#2C2E33", border_width=2)
 
     def _on_filters_changed(self, _value=None):
         """Recoleta os filtros atuais e atualiza a lista de pessoas e tarefas."""

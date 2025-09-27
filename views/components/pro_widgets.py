@@ -1,6 +1,17 @@
 import customtkinter as ctk
 
 
+class ProLabel(ctk.CTkLabel):
+    def __init__(self, master, **kwargs):
+        super().__init__(master, **kwargs)
+
+        self.configure(
+            font=("Tahoma", 11),
+            fg_color="#2C2E33",
+            height=15
+        )
+
+
 class ProButton(ctk.CTkButton):
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
@@ -9,8 +20,8 @@ class ProButton(ctk.CTkButton):
             font=("Tahoma", 11),
             corner_radius=5,
             border_width=0,
-            fg_color="#2C2E33",
-            hover_color="#3E4D66"
+            fg_color="#3E4D66", #"#2C2E33",
+            hover_color="#2C2E33" #3E4D66"
         )
 
 
@@ -41,10 +52,10 @@ class ProCheckBox(ctk.CTkCheckBox):
 
         self.configure(
             fg_color="#2C2E33",
-            hover_color="#3E4D66",
+            hover_color="#2C2E33",
             font=("Tahoma", 11),
             border_width=1,
-            corner_radius=0,
+            corner_radius=10,
             checkbox_width=20,
             checkbox_height=20
         )

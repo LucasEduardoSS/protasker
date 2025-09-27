@@ -36,6 +36,7 @@ class CardContainer(ctk.CTkScrollableFrame):
 
     def remove_card(self, card):
         self.cards.remove(card)
+        card.destroy()
         self.relayout()
 
     def _on_resize(self, event):

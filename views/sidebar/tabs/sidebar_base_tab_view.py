@@ -27,13 +27,17 @@ class SidebarBaseTabView(CTkFrame):
         self.label = CTkLabel(self.tab_top_bar, text="title", font=("Tahoma", 11))
         self.label.pack(side="left", padx=(10, 0))
 
+        def foo():
+            pass
+
         # Botão de refresh
         self.refresh_btn = ProButton(
             self.tab_top_bar,
             text="",
             height=15,
             width=15,
-            image=get_image_as_tkimage("refresh-icon.png", 20)
+            image=get_image_as_tkimage("refresh-icon.png", 20),
+            command=foo
         )
         if show_refresh_btn:
             self.refresh_btn.pack(side="right", padx=(10, 0))
