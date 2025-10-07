@@ -6,86 +6,96 @@ from services.assignment_service import AssignmentService
 
 
 class DataFacade:
-    """Centraliza chamadas relacionadas a dados."""
+    """ Centraliza chamadas relacionadas a dados. """
 
     @staticmethod
     def get_all_data(entity: str) -> list[dict]:
-        """Obtém todos os registros de uma entidade."""
-        if entity == "sector":
-            return SectorService.get_all_sectors()
-        elif entity == "person":
-            return PersonService.get_all_people()
-        elif entity == "task":
-            return TaskService.get_tasks()
-        elif entity == "distro":
-            return DistributionService.get_all_distributions()
-        elif entity == "assignment":
-            return AssignmentService.get_all_assignments()
-        else:
-            raise ValueError(f"Entidade '{entity}' não suportada.")
+        """ Obtém todos os registros de uma entidade. """
+        match entity.lower():
+            case "sector":
+                return SectorService.get_all_sectors()
+            case "person":
+                return PersonService.get_all_people()
+            case "task":
+                return TaskService.get_tasks()
+            case "distro":
+                return DistributionService.get_all_distributions()
+            case "assignment":
+                return AssignmentService.get_all_assignments()
+            case _:
+                raise ValueError(f"Entidade '{entity.lower()}' não suportada.")
 
     @staticmethod
     def get_record(entity: str, record_id: int):
-        """Obtém um único registro por entidade e ID."""
-        if entity == "sector":
-            return SectorService.get_sector_by_id(record_id)
-        elif entity == "person":
-            return PersonService.get_person_by_id(record_id)
-        elif entity == "task":
-            return TaskService.get_task_by_id(record_id)
-        elif entity == "distro":
-            return DistributionService.get_distribution_by_id(record_id)
-        elif entity == "assignment":
-            return AssignmentService.get_assignment_by_id(record_id)
-        else:
-            raise ValueError(f"Entidade '{entity}' não suportada.")
+        """ Obtém um único registro por entidade e ID. """
+        match entity.lower():
+            case "sector":
+                return SectorService.get_sector_by_id(record_id)
+            case "person":
+                return PersonService.get_person_by_id(record_id)
+            case "task":
+                return TaskService.get_task_by_id(record_id)
+            case "distro":
+                return DistributionService.get_distribution_by_id(record_id)
+            case "assignment":
+                return AssignmentService.get_assignment_by_id(record_id)
+            case _:
+                raise ValueError(f"Entidade '{entity.lower()}' não suportada.")
 
     @staticmethod
     def create_record(entity: str, data: dict):
-        """Cria um novo registro por entidade."""
-        if entity == "sector":
-            return SectorService.create_sector(data)
-        elif entity == "person":
-            return PersonService.create_person(data)
-        elif entity == "task":
-            return TaskService.create_task(data)
-        elif entity == "distro":
-            return DistributionService.create_distribution(data)
-        elif entity == "assignment":
-            return AssignmentService.create_assignment(data)
-        return None
+        """ Cria um novo registro por entidade. """
+        match entity.lower():
+            case "sector":
+                return SectorService.create_sector(data)
+            case "person":
+                return PersonService.create_person(data)
+            case "task":
+                return TaskService.create_task(data)
+            case "distro":
+                return DistributionService.create_distribution(data)
+            case "assignment":
+                return AssignmentService.create_assignment(data)
+            case _:
+                raise ValueError(f"Entidade '{entity.lower()}' não suportada.")
 
     @staticmethod
     def update_record(entity: str, record_id: int, new_data: dict):
-        """Atualiza um registro por entidade e ID."""
-        if entity == "sector":
-            SectorService.update_sector(record_id, new_data)
-        elif entity == "person":
-            PersonService.update_person(record_id, new_data)
-        elif entity == "task":
-            TaskService.update_task(record_id, new_data)
-        return None
+        """ Atualiza um registro por entidade e ID. """
+        match entity.lower():
+            case "sector":
+                return SectorService.update_sector(record_id, new_data)
+            case "person":
+                return PersonService.update_person(record_id, new_data)
+            case "task":
+                return TaskService.update_task(record_id, new_data)
+            case _:
+                raise ValueError(f"Entidade '{entity.lower()}' não suportada.")
 
     @staticmethod
     def delete_record(entity: str, record_id: int):
-        """Remove um registro por entidade e ID."""
-        if entity == "sector":
-            SectorService.delete_sector(record_id)
-        elif entity == "person":
-            PersonService.delete_person(record_id)
-        elif entity == "task":
-            TaskService.delete_task(record_id)
-        elif entity == "distro":
-            DistributionService.delete_distribution(record_id)
-        return None
+        """ Remove um registro por entidade e ID. """
+        match entity.lower():
+            case "sector":
+                return SectorService.delete_sector(record_id)
+            case "person":
+                return PersonService.delete_person(record_id)
+            case "task":
+                return TaskService.delete_task(record_id)
+            case "distro":
+                return DistributionService.delete_distribution(record_id)
+            case _:
+                raise ValueError(f"Entidade '{entity.lower()}' não suportada.")
 
     @staticmethod
     def get_fields(entity: str):
-        match entity:
+        """ Retorna os campos de uma entidade. """
+        match entity.lower():
             case "sector":
                 return SectorService.get_fields()
             case "person":
                 return PersonService.get_fields()
             case "task":
                 return TaskService.get_fields()
-        return None
+            case _:
+                raise ValueError(f"Entidade '{entity.lower()}' não suportada.")

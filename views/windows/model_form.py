@@ -50,7 +50,7 @@ class ModelForm(ctk.CTkFrame):
                 widget = LabeledComboBox(self, label, value.rel_model)
 
                 if model_info:  # Carrega o valor atual em caso de edição
-                  widget.combo.set(model_info["name"])
+                  widget.combo.set(DataFacade.get_record(name, model_info[name]).name if model_info[name] is not None else label)
             else:
                 # Campos de texto -> usa LabeledEntryView
                 widget = LabeledEntryView(self, label)
@@ -59,7 +59,7 @@ class ModelForm(ctk.CTkFrame):
                   widget.entry.insert(0, model_info[name] if model_info[name] is not None else label)
 
             # pula campos ignorados
-            if name not in self.jump_fields:
+            if name not in self.jump_fields or model_info:
                 widget.pack(side="top", fill="x", padx=10, pady=10)
 
             self.entries[name] = widget

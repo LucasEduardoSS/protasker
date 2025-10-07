@@ -1,4 +1,5 @@
 import customtkinter as ctk
+from peewee import DoesNotExist
 
 from views.sidebar.tabs.sidebar_base_tab_view import SidebarBaseTabView
 
@@ -18,13 +19,29 @@ class DetailsTabView(SidebarBaseTabView):
         self.refresh_btn.configure(command=self.refresh)
 
     def refresh(self):
+        """ Atualiza a visualização dos detalhes com as informações do item selecionado. """
         if self.item_info:
-            model_info = self.model.get_by_id(self.item_info["id"])
-            if model_info:
-                self.load_details(self.model, dict(model_info.__data__))
+            try:
+                model_info = DataFacade.get_record(self.model, self.item_info["id"])
+                if model_info:
+                    self.load_details(self.model, dict(model_info.__data__))
+
+            except DoesNotExist:
+                # Limpa todos os itens
+                for widget in self.winfo_children():
+                    if widget == self.tab_top_bar:
+                        continue
+                    widget.destroy()
+
+                empty_label = ctk.CTkLabel(
+                    self,
+                    text="Selecione um registro para\n visualizar detalhes.",
+                    font=("Tahoma", 11)
+                )
+                empty_label.pack(side="top", fill="both", expand=True, pady=(0, 20))
 
     def load_details(self, model, item_info: dict):
-        """ Atualiza a visualização dos detalhes com as informações do item selecionado. """
+        """ Carrega as informações do item selecionado. """
 
         self.model = model
         self.item_info = item_info
