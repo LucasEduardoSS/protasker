@@ -1,11 +1,12 @@
 import customtkinter as ctk
 from peewee import IntegrityError
 
-from models.distribution_model import Distribution
+from services.data_facade import DataFacade
+
 from views.windows.edit_view import EditView
-from views.windows.distribution_view import DistributionView
 from views.windows.alert_view import AlertView
 from views.components.tooltip import Tooltip
+
 from utils.widgets_utils import format_card_info
 from utils.widgets_utils import propagate_hover_bind
 from utils.image_utils import get_image_as_tkimage
@@ -19,6 +20,7 @@ class Card(ctk.CTkFrame):
 
         # Informações do card
         self.model_info = model_info
+        self.buttons = {}
 
         # Configuração do card
         self._normal_fg = "#3E4D66"
@@ -35,24 +37,26 @@ class Card(ctk.CTkFrame):
         # Configuração do Grid Layout
         self.grid_columnconfigure(0, weight=2)
         self.grid_columnconfigure(1, weight=0, minsize=30)
-
-        # Impede que os widgets redimensionem o card
         self.grid_propagate(False)
 
-        # Botão de editar registro
-        edit_button = CardButton(self, icon=get_image_as_tkimage("edit-icon.png", 20), command=self._edit_record)
-        edit_button.grid(row=0, column=1, padx=5, pady=5, sticky="n")
-        Tooltip(edit_button, "Editar registro")
+        buttons_frame = ctk.CTkFrame(self, height=250, width=30, fg_color="transparent")
+        buttons_frame.grid(row=0, column=1, padx=2, pady=4, sticky="nsew")
 
-        # Botão de ver detalhes
-        self.details_button = CardButton(self, icon=get_image_as_tkimage("list-icon.png", 20), command=None)
-        self.details_button.grid(row=0, column=1, padx=5, pady=(35, 5), sticky="n")
-        Tooltip(self.details_button, "Ver detalhes")
+        self.buttons_info = [
+            {"tooltip": "Editar", "command": self._edit_record, "icon": get_image_as_tkimage("edit-icon.png", 20)},
+            {"tooltip": "Detalhes", "command": None, "icon": get_image_as_tkimage("list-icon.png", 20)},
+            {"tooltip": "Deletar", "command": None, "icon": get_image_as_tkimage("delete-icon.png", 20)}
+        ]
 
-        # Botão de deletar registro
-        self.delete_button = CardButton(self, icon=get_image_as_tkimage("delete-icon.png", 20), command=None)
-        self.delete_button.grid(row=0, column=1, padx=5, pady=(65, 5), sticky="n")
-        Tooltip(self.delete_button, "Deletar registro")
+        # Constrói os botões do card
+        for button in self.buttons_info:
+            button_widget = CardButton(buttons_frame, icon=button["icon"], command=button["command"])
+            Tooltip(button_widget, button["tooltip"])
+
+            if not "total_tasks" in model_info or button["tooltip"] != "Editar":
+                button_widget.pack(side="top", padx=0, pady=2)
+
+            self.buttons[button["tooltip"]] = button_widget
 
         # Frame que conterá os campos (reutilizado)
         self._card_info_frame = None
@@ -119,42 +123,17 @@ class Card(ctk.CTkFrame):
     def _edit_record(self):
         """Abre uma janela de edição do registro."""
 
-        if self.master.model == Distribution:
-            DistributionView (
-                model_info=self.model_info,
-                on_save=self._apply_update
-            )
-        else:
-            EditView (
-                model_cls=self.master.model,
-                model_info=self.model_info,
-                on_save=self._apply_update
-            )
+        EditView (
+            title="Editar registro",
+            model_cls=self.master.model,
+            model_info=self.model_info,
+            on_save=self._apply_update
+        )
 
     def _apply_update(self, updated_row: dict):
         """Chamado pela janela de edição após um save sucedido."""
         self.model_info = updated_row
         self.load_fields(updated_row)
-
-    def remove_record(self, model):
-        alert_window = AlertView(self, "Alerta", "Tem certeza que deseja deletar esse registro?")
-
-        def on_confirm():
-            try:
-                model.delete().where(model.id == self.model_info["id"]).execute()
-            except IntegrityError:
-                alert_window.message_label.configure(text="Alerta: Este registro possui registros vinculados ativos.")
-            except Exception as e:
-                alert_window.message_label.configure(text=f"Erro desconhecido ao deletar registro: {e}")
-            else:
-                alert_window.destroy()
-                self.master.remove_card(self)
-
-        def on_cancel():
-            alert_window.destroy()
-
-        alert_window.confirm_button.configure(command=on_confirm)
-        alert_window.cancel_button.configure(command=on_cancel)
 
 
 class CardButton(ctk.CTkButton):

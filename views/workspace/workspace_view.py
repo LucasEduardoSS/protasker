@@ -3,11 +3,6 @@ import tkinter as ttk
 from views.workspace.workspace_tab_view import WorkspaceTabView
 from views.sidebar.sidebar_tab_view import SidebarTabView
 
-from models.person_model import Person
-from models.task_model import Task
-from models.sector_model import Sector
-from models.distribution_model import Distribution
-
 
 class WorkspaceView(ttk.PanedWindow):
     """Painel que divide as tabs da sidebar e do workspace."""
@@ -40,10 +35,10 @@ class WorkspaceView(ttk.PanedWindow):
         self.add(self.workspace_tabs, minsize=300)
 
         # Criando as abas principais
-        self.workspace_tabs.add("Distribuições", Distribution)
-        self.workspace_tabs.add("Tarefas", Task)
-        self.workspace_tabs.add("Pessoas", Person)
-        self.workspace_tabs.add("Setores", Sector)
+        self.workspace_tabs.add("Distribuições", "distro")
+        self.workspace_tabs.add("Tarefas", "task")
+        self.workspace_tabs.add("Pessoas", "person")
+        self.workspace_tabs.add("Setores", "sector")
 
         # Ajustes finos do Workspace
         self.workspace_tabs.configure(corner_radius=0)

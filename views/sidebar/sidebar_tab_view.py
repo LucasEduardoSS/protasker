@@ -29,4 +29,4 @@ class SidebarTabView(ctk.CTkFrame):
 
         # Mostra a nova aba
         self.current_tab = tab_id
-        self.tabs[tab_id].pack(fill="both", expand=True)
+        self.tabs[tab_id].pack(fill="both", expand=True, ipadx=20)

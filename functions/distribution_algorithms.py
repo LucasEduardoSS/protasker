@@ -5,10 +5,14 @@ from random import shuffle
 from peewee import IntegrityError
 
 # Modelos Peewee
+# Importados apenas para typing
 from models.person_model import Person
 from models.task_model import Task
 from models.assignment_model import Assignment
 from models.distribution_model import Distribution
+
+# Services
+from services.assignment_service import AssignmentService
 
 
 @dataclass(order=True)
@@ -32,17 +36,18 @@ def _resolve_db():
     return getattr(getattr(Assignment, "_meta", None), "database", None)
 
 
-def distribute_tasks_fair(
+def allocate_tasks(
         distro: Distribution,
         people: List[Person],
         tasks: List[Task],
         *,
         clear_existing_for_people: bool = False,
-    ) -> List[Tuple[Person, List[Task]]]:
+    ) -> List[Tuple[Person, List[Task]]] | None:
     """
     Distribui tarefas de forma justa entre pessoas usando Best-Fit Decreasing.
 
     - Usa Task.weight (int) como métrica de carga.
+    - Considera o setor das tarefas e das pessoas (tarefas só são atribuídas a pessoas do mesmo setor).
     - Retorna uma lista de (pessoa, [tarefas]) para uso imediato.
     - Se 'assignment_model' for fornecido (um modelo de junção do Peewee como Assignment),
       a função também persistirá os vínculos pessoa ↔ tarefa em uma única transação.
@@ -70,9 +75,23 @@ def distribute_tasks_fair(
     tasks_desc = sorted(tasks, key=lambda e: int(getattr(e, "weight", 0) or 0), reverse=True)
 
     # Alocação gulosa: menor carga → menos tarefas → índice estável
+    # Agora considerando o setor da tarefa e da pessoa
     for task in tasks_desc:
         weight = int(getattr(task, "weight", 0) or 0)
-        bucket = min(buckets, key=lambda x: (x.load, len(x.tasks), x.index))
+        task_sector = getattr(task, "sector", None)
+        
+        # Filtra buckets (pessoas) do mesmo setor da tarefa
+        eligible_buckets = [
+            b for b in buckets 
+            if getattr(b.person, "sector", None) == task_sector
+        ]
+        
+        # Se não houver pessoas elegíveis do mesmo setor, pula a tarefa
+        if not eligible_buckets:
+            return None
+        
+        # Seleciona o bucket com menor carga entre os elegíveis
+        bucket = min(eligible_buckets, key=lambda x: (x.load, len(x.tasks), x.index))
         bucket.tasks.append(task)
         bucket.load += weight
 
@@ -84,9 +103,7 @@ def distribute_tasks_fair(
 
         # Limpa as atribuições existentes para essas pessoas
         if clear_existing_for_people:
-            Assignment.delete().where(
-                Assignment.person.in_([p for p, _ in plan])
-            ).execute()
+            AssignmentService.delete_assignments(person_ids=[p.id for p, _ in plan])
 
         try:
             # Use get_or_create para evitar duplicatas se unique(person, task) estiver aplicado
@@ -96,6 +113,5 @@ def distribute_tasks_fair(
         except Exception:
             db.rollback()
             raise IntegrityError(f"Tarefa '{task}' já distribuida.")
-
 
     return plan

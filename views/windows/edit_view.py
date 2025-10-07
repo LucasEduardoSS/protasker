@@ -2,14 +2,17 @@ from customtkinter import CTkToplevel
 
 from views.windows.model_form import ModelForm
 from utils.gui_utils import center_window
+from services.data_facade import DataFacade
+from database.db import get_database
 
 
 class EditView(CTkToplevel):
     def __init__(self,
+                 title: str,
                  model_cls,
                  model_info: dict | None = None,
-                 tab_name=None,
-                 on_save=None,
+                 tab_name = None,
+                 on_save = None,
                  **kwargs):
 
         # Inicializa a classe pai
@@ -23,7 +26,9 @@ class EditView(CTkToplevel):
         self.on_save = on_save
 
         # Configuração da janela
+        self.title(title)
         self.configure(fg_color="#2E333C")
+        self.minsize(300,100)
         self.iconbitmap("images/protasker_icon.ico")
 
         # Mantém sobre a janela principal
@@ -53,16 +58,17 @@ class EditView(CTkToplevel):
           record_id = None
 
         # Atualiza ou cria no banco de dados
-        db = self.model_cls.get_meta().database
+        db = get_database()
         with db.atomic():
             if record_id:
-                (self.model_cls
-                 .update(**data)
-                 .where(self.model_cls.id == record_id)
-                 .execute())
-                self.model_cls.get_by_id(record_id)
+                DataFacade.update_record(self.model_cls, record_id, data)
+                # Adiciona o ID ao dicionário para o callback
+                data['id'] = record_id
             else:
-                self.model_cls.create(**data)
+                # create_record retorna a nova instância do modelo
+                new_record = DataFacade.create_record(self.model_cls, data)
+                # Adiciona o ID do novo registro ao dicionário
+                data['id'] = new_record.id
 
         # Chama a função de callback
         if callable(self.on_save):

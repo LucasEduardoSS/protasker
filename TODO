@@ -1,8 +1,8 @@
 
-- Menus
-- Tab de controle da sidebar (em andamento)
-- Tab de detalhes da sidebar
+< A FAZER >
+
 - Programar o filtro das tabs
+- Adicionar os botões no item de lista
 
 < IDEIAS >
 
@@ -17,3 +17,4 @@
 - Adicionar configuração para tarefa periódica
 - Filtragem dinâmica dos itens nas listas de distribuição. Neste caso
   pode ser necessário trabalhar com Models ao invés de dicionários.
+- Tarefas com dependências

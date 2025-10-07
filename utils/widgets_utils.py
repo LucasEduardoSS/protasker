@@ -21,7 +21,10 @@ LABELS_PT = {
     "status": "Status",
     "role": "Cargo",
     "people": "Pessoas",
-    "tasks": "Tarefas"
+    "tasks": "Tarefas",
+    "total_tasks": "Total de tarefas",
+    "finished_tasks": "Tarefas concluídas",
+    "title": "Título"
 }
 
 
@@ -57,7 +60,7 @@ def format_card_info(fields: Dict[str, Any]) -> Dict[str, Any]:
 
         # Mostra o nome do setor
         if key == "sector":
-            value = DataFacade.get_record("sectors", value)
+            value = DataFacade.get_record("sector", value)
 
         # Mapear rótulo
         label = LABELS_PT.get(key, None)

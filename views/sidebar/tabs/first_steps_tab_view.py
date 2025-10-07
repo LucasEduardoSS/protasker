@@ -1,4 +1,5 @@
 from customtkinter import CTkFrame, CTkLabel
+
 from views.sidebar.tabs.sidebar_base_tab_view import SidebarBaseTabView
 
 
@@ -6,6 +7,12 @@ class FirstStepsTabView(SidebarBaseTabView):
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
         self.label.configure(text="Primeiros passos")
+
+        # Limpa todos os itens
+        for widget in self.winfo_children():
+            if widget == self.tab_top_bar:
+                continue
+            widget.destroy()
 
         boas_vindas_label = CTkLabel(
             self,

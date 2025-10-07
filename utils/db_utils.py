@@ -25,12 +25,12 @@ def gen_sample_data():
     data["people"].append(Person(name="Valdemar", role="Comprador", sector=data["sectors"][2], company="Eletrobras"))
 
     # Tarefas
-    data["tasks"].append(Task(name="Projetar um controlador", description="Projetar um controlador", sector=data["sectors"][0], priority="Alta", dependencies="", company="CidadeSoft", status="Concluída"))
-    data["tasks"].append(Task(name="Emitir uma nota", description="uma", sector=data["sectors"][1], priority="Média", dependencies="", company="Petrobras"))
-    data["tasks"].append(Task(name="Comprar uma lapiseira", description="Comprar uma lapiseira", sector=data["sectors"][2], priority="Baixa", dependencies="", company="Eletrobras"))
+    data["tasks"].append(Task(name="Projetar um controlador", description="Projetar um controlador", sector=data["sectors"][0], priority="Alta", company="CidadeSoft", status="Concluída"))
+    data["tasks"].append(Task(name="Emitir uma nota", description="uma", sector=data["sectors"][1], priority="Média", company="Petrobras"))
+    data["tasks"].append(Task(name="Comprar uma lapiseira", description="Comprar uma lapiseira", sector=data["sectors"][2], priority="Baixa", company="Eletrobras"))
 
     data["distros"].append(Distribution(
-        title="Distribuição 1",
+        name="Distribuição 1",
         total_tasks=3,
         finished_tasks=1
     ))

@@ -1,10 +1,13 @@
 import customtkinter as ctk
+from peewee import IntegrityError
 
+from services.data_facade import DataFacade
 from views.workspace.workspace_toolbar_view import WorkspaceToolbarView
 from views.workspace.containers.card_container_view import CardContainer
 from views.workspace.containers.list_container_view import ListContainer
 
 from views.windows.distribution_view import DistributionView
+from views.windows.alert_view import AlertView
 from views.windows.edit_view import EditView
 
 
@@ -35,8 +38,10 @@ class WorkspaceTabView(ctk.CTkTabview):
         # Metadados por tab
         self.tabs_meta = {}  # name -> dict
 
-    def add(self, name, model=None, **kwargs):
-        """Adiciona uma nova tab ao CTkTabview."""
+    def add(self, name, model:str=None, **kwargs):
+        """
+        Adiciona uma nova tab ao CTkTabview.
+        """
 
         # Cria a tab padrão do CTkTabview
         super().add(name)
@@ -57,12 +62,12 @@ class WorkspaceTabView(ctk.CTkTabview):
             "view_mode": "Cards"  # Lista ou Cards
         }
 
-        # Toolbar (topo da tab)
+        # Toolbar
         toolbar = WorkspaceToolbarView(tab, name, fg_color=self.cget("bg_color"))
 
         # Containers para modos de visualização
-        cards_container = CardContainer(tab, model)
-        list_container = ListContainer(tab, model)
+        cards_container = CardContainer(tab, model, name)
+        list_container = ListContainer(tab, model, name)
 
         # Guarda metadados da tab
         self.tabs_meta[name].update({
@@ -86,8 +91,7 @@ class WorkspaceTabView(ctk.CTkTabview):
         self.set_container(name, self.tabs_meta[name]["view_mode"])
 
         # Carrega os dados de cada tab
-        data: list[dict] = self.tabs_meta[name]["model"].get_all_dicts()
-        for item in data:
+        for item in DataFacade.get_all_data(model):
             self.load_record(name, item)
 
     def on_mode_change(self, tab_name: str, mode: str):
@@ -96,7 +100,6 @@ class WorkspaceTabView(ctk.CTkTabview):
         - tab_name: nome da tab
         - value: mode de visualização (Lista ou Cards)
         """
-
         if mode.lower() == "cards":
             self.tabs_meta[tab_name]["list_container"].pack_forget()
         else:
@@ -112,54 +115,92 @@ class WorkspaceTabView(ctk.CTkTabview):
         - tab_name: nome da tab
         - mode: mode de visualização (Lista ou Cards)
         """
-
         if mode.lower() == "cards":
             self.tabs_meta[tab_name]["cards_container"].pack(fill="both", expand=True)
         else:
             self.tabs_meta[tab_name]["list_container"].pack(fill="both", expand=True)
 
     def refresh_container(self, tab_name, mode):
-        data: list[dict] = self.tabs_meta[tab_name]["model"].get_all_dicts()
+        """
+        Atualiza os dados do container de dados.
+        """
+        data: list[dict] = DataFacade.get_all_data(self.tabs_meta[tab_name]["model"])
 
         if mode.lower() == "cards":
             self.tabs_meta[tab_name]["cards_container"].refresh_cards(data)
         else:
             self.tabs_meta[tab_name]["list_container"].refresh_items(data)
 
-
     def load_record(self, tab_name: str, record_info: dict):
         """
         Carrega um registro na tab.
-        - tab_name: nome da tab
-        - record_info: informações do registro
         """
-
         self.tabs_meta[tab_name]["list_container"].add_item(record_info)
         self.tabs_meta[tab_name]["cards_container"].add_card(record_info)
 
     def add_record(self, tab_name: str):
         """
         Abre uma janela de inserção de registro.
-        - tab_name: nome da tab
         """
-
         EditView(
+            title="Adicionar novo registro",
             tab_name=tab_name,
             model_cls=self.tabs_meta[tab_name]["model"],
             on_save=self.load_record
         )
 
+    def remove_record(self, tab_name: str, record_id: int):
+        """
+        Remove um registro da tab, após confirmação.
+        """
+
+        def on_confirm():
+            model = self.tabs_meta[tab_name]["model"]
+            try:
+                DataFacade.delete_record(model, record_id)
+            except IntegrityError:
+                alert.message_label.configure(text="Erro: Este registro possui registros vinculados ativos.")
+                return
+            except Exception as e:
+                alert.message_label.configure(text=f"Erro desconhecido ao deletar registro: {e}")
+                return
+
+            alert.destroy()
+
+            # Remove o item da lista
+            list_container = self.tabs_meta[tab_name]["list_container"]
+            item_to_remove = next((item for item in list_container.list_items if item.model_info['id'] == record_id),
+                                  None)
+            if item_to_remove:
+                list_container.remove_item(item_to_remove)
+
+            # Remove o card do container
+            card_container = self.tabs_meta[tab_name]["cards_container"]
+            card_to_remove = next((card for card in card_container.cards if card.model_info['id'] == record_id), None)
+            if card_to_remove:
+                card_container.remove_card(card_to_remove)
+
+        def on_cancel():
+            alert.destroy()
+
+        alert = AlertView(self, "Alerta", "Tem certeza que deseja deletar esse registro?")
+        alert.confirm_button.configure(command=on_confirm)
+        alert.cancel_button.configure(command=on_cancel)
+
     def add_distribution(self):
-        """Abre uma janela de distribuição de tarefas."""
+        """
+        Abre uma janela de distribuição de tarefas.
+        """
         DistributionView(on_save=lambda info: self.load_record("Distribuições", info))
 
     def show_item_details(self, model, item_info: dict):
         """
-        Lida com a seleção de um item (Card ou ListItem) e exibe a aba de detalhes com as informações.
+        Lida com a seleção de um item (Card ouListItem) e exibe a
+        aba de detalhes com as informações.
         """
         sidebar =  self.master.master.main_meta["sidebar"]
 
         if sidebar.active_tab_id != "detalhes":
-            self.master.master.main_meta["sidebar"].tab_buttons["detalhes"].invoke()
+            sidebar.tab_buttons["detalhes"].invoke()
 
         self.master.sidebar_tabs.tabs["detalhes"].load_details(model, item_info)

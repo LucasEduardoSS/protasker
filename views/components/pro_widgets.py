@@ -7,7 +7,7 @@ class ProLabel(ctk.CTkLabel):
 
         self.configure(
             font=("Tahoma", 11),
-            fg_color="#2C2E33",
+            fg_color="transparent",
             height=15
         )
 

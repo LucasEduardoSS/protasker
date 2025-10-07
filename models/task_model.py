@@ -12,17 +12,16 @@ class Task(BaseModel):
     Campos: Nome, Descrição, Setor, Empresa, Peso, Prioridade, Dependências, Data de Criação, Prazo, Data de Conclusão e Condição.
     """
 
-    name = CharField()
-    description = CharField(default="Sem descrição")
-    sector = ForeignKeyField(Sector, backref='tasks', null=True)
-    company = CharField(default="Sem empresa", null=True)
-    weight = IntegerField(default=0)
-    priority = CharField()
-    dependencies = CharField(default="Nenhuma", null=True)
+    name          = CharField()
+    description   = CharField(default="Sem descrição")
+    sector        = ForeignKeyField(Sector, backref='tasks', null=True)
+    company       = CharField(default="Sem empresa", null=True)
+    weight        = IntegerField(default=0)
+    priority      = CharField()
     creation_date = DateTimeField(default=datetime.now)
-    deadline = DateTimeField(default=None, null=True)
-    closure_date = DateTimeField(default=None, null=True)
-    status = CharField(default="Pendente")
+    deadline      = DateTimeField(default=None, null=True)
+    closure_date  = DateTimeField(default=None, null=True)
+    status        = CharField(default="Pendente")
 
     class Meta:
         database = database
@@ -33,7 +32,3 @@ class Task(BaseModel):
 
     def __repr__(self):
         return f"<Task: {self.name}>"
-
-    @staticmethod
-    def get_by_name(name: str):
-        return Task.get_or_none(Task.name == name)

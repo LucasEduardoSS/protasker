@@ -10,8 +10,8 @@ class SidebarView(ctk.CTkFrame):
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
 
-        self.configure(fg_color="#2E333C", corner_radius=0)
-        self.pack(side="left", anchor="nw", fill="y", padx=0, pady=0)
+        self.configure(fg_color="#2E333C", bg_color="#3F3F3F", corner_radius=0)
+        self.pack(side="left", anchor="w", fill="y", padx=0, pady=(0, 3))
 
         self.tab_buttons = {}
         self.active_tab_id = None

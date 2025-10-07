@@ -10,7 +10,7 @@ class Distribution(BaseModel):
     Possui os campos: Título, total de tarefas e número de tarefas concluídas.
     """
 
-    title = CharField()
+    name = CharField()
     total_tasks = IntegerField()
     finished_tasks = IntegerField()
 

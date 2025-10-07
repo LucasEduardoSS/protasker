@@ -31,3 +31,11 @@ database = SqliteDatabase(
         "cache_size": -1024 * 64
     }
 )
+
+def get_database() -> SqliteDatabase:
+    """
+    Retorna a instância global da database.
+    Facilita o acesso à conexão do banco de dados em qualquer lugar do projeto.
+    """
+    return database
+

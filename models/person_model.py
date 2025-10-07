@@ -25,8 +25,3 @@ class Person(BaseModel):
 
     def __repr__(self):
         return f"<Person: {self.name}>"
-
-    @staticmethod
-    def get_by_name(name: str):
-        """ Retorna a instância de Person com o nome informado. """
-        return Person.get_or_none(Person.name == name)

@@ -60,13 +60,17 @@ class CardContainer(Container):
         self.bind("<Configure>", self._on_resize, add="+")
 
     def _on_resize(self, event):
-        # Debounce: Reorganiza apenas após parar de mover por ~60ms
+        """
+        Debounce: Reorganiza apenas após parar de mover por ~60ms
+        """
         if self._relayout_after_id:
             self.after_cancel(self._relayout_after_id)
         self._relayout_after_id = self.after(60, self.relayout)
 
     def relayout(self):
-        """ Recalcula layout do container de cards """
+        """
+        Recalcula layout do container de cards
+        """
         self._relayout_after_id = None
         container_width = self.winfo_width()
 

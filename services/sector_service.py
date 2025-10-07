@@ -15,9 +15,9 @@ class SectorService:
         return Sector.get(Sector.id == sector_id)
 
     @staticmethod
-    def create_sector(name: str):
+    def create_sector(data: dict = None):
         """Cria um novo setor."""
-        sector = Sector(name=name)
+        sector = Sector(**data)
         sector.save()
         return sector
 
@@ -32,3 +32,9 @@ class SectorService:
         """Exclui um setor pelo ID."""
         query = Sector.delete().where(Sector.id == sector_id)
         query.execute()
+
+
+    @staticmethod
+    def get_fields():
+        """Obtém os nomes dos campos do modelo Sector."""
+        return Sector._meta.fields.items()

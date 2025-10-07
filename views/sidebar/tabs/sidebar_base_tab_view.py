@@ -10,16 +10,9 @@ class SidebarBaseTabView(CTkFrame):
     def __init__(self, master, show_refresh_btn: bool = True, **kwargs):
         super().__init__(master, **kwargs)
 
-        # Configuração da base
         self.configure(fg_color="transparent", corner_radius=0)
 
-        self.tab_top_bar = CTkFrame(
-            self,
-            fg_color = "#2C2E33",
-            height = 25,
-            corner_radius = 0,
-            border_width = 0
-        )
+        self.tab_top_bar = CTkFrame(self, fg_color = "#2C2E33", height = 25, corner_radius = 0, border_width = 0)
         self.tab_top_bar.pack(side="top", fill="x", pady=(0, 10))
         self.tab_top_bar.pack_propagate(False)
 
@@ -27,17 +20,18 @@ class SidebarBaseTabView(CTkFrame):
         self.label = CTkLabel(self.tab_top_bar, text="title", font=("Tahoma", 11))
         self.label.pack(side="left", padx=(10, 0))
 
-        def foo():
-            pass
-
-        # Botão de refresh
-        self.refresh_btn = ProButton(
-            self.tab_top_bar,
-            text="",
-            height=15,
-            width=15,
-            image=get_image_as_tkimage("refresh-icon.png", 20),
-            command=foo
-        )
+        # Cria um botão de refresh
         if show_refresh_btn:
+            self.refresh_btn = ProButton(
+                self.tab_top_bar,
+                text="",
+                height=15,
+                width=15,
+                image=get_image_as_tkimage("refresh-icon.png", 20),
+                command=None
+            )
+            self.refresh_btn.configure(fg_color="transparent")
             self.refresh_btn.pack(side="right", padx=(10, 0))
+
+        empty_label = CTkLabel(self, text="Selecione um registro para\n visualizar detalhes.", font=("Tahoma", 11))
+        empty_label.pack(side="top", fill="both", expand=True, pady=(0, 20))

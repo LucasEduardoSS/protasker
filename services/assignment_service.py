@@ -4,6 +4,8 @@ from models.assignment_model import Assignment
 class AssignmentService:
     """Lida com operações relacionadas a pessoas."""
 
+    # Operações básicas
+
     @staticmethod
     def get_all_assignments():
         return Assignment.select(Assignment)
@@ -11,18 +13,6 @@ class AssignmentService:
     @staticmethod
     def get_assignment_by_id(assignment_id: int):
         return Assignment.get(Assignment.id == assignment_id)
-
-    @staticmethod
-    def get_assignment_by_distro(distro_id: int):
-        return Assignment.select().where(Assignment.distro == distro_id)
-
-    @staticmethod
-    def get_assignment_by_person(person_id: int):
-        return Assignment.select().where(Assignment.person == person_id)
-
-    @staticmethod
-    def get_assignment_by_task(task_id: int):
-        return Assignment.select().where(Assignment.task == task_id)
 
     @staticmethod
     def create_assignment(data: dict) -> Assignment:
@@ -39,3 +29,60 @@ class AssignmentService:
     def delete_assignment(assignment_id: int):
         query = Assignment.delete().where(Assignment.id == assignment_id)
         query.execute()
+
+    # Operações especiais
+
+    @classmethod
+    def apply_filter(
+            cls,
+            query,
+            sector_id: int = None,
+            distro_id: int = None,
+            person_id: int = None,
+            person_ids: list[int] = None
+        ):
+        # Aplica filtros
+        if sector_id:
+            query = query.where(Assignment.sector == sector_id)
+        if distro_id:
+            query = query.where(Assignment.distro_id == distro_id)
+        if person_id:
+            query = query.where(Assignment.person == person_id)
+        if person_ids:
+            query = query.where(Assignment.person.in_(person_ids))
+        return query
+
+    @staticmethod
+    def get_assignments(
+            sector_id: int = None,
+            distro_id: int = None,
+            person_id: int = None,
+            person_ids: list = None
+    ) -> list[dict]:
+        """
+        Busca atribuições com base em um conjunto flexível de filtros.
+        """
+
+        query = Assignment.select()
+        query = AssignmentService.apply_filter(query, sector_id, distro_id, person_id, person_ids)
+        return list(query.dicts())
+
+    @staticmethod
+    def delete_assignments(
+            sector_id: int = None,
+            distro_id: int = None,
+            person_id: int = None,
+            person_ids: list = None
+    ):
+        """
+        Busca atribuições com base em um conjunto flexível de filtros.
+        """
+
+        query = Assignment.delete()
+        query = AssignmentService.apply_filter(query, sector_id, distro_id, person_id, person_ids)
+        query.execute()
+
+    @staticmethod
+    def get_fields():
+        """Retorna os campos de Assignment."""
+        return Assignment._meta.sorted_field_names

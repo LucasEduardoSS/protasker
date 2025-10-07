@@ -4,12 +4,13 @@ from views.components.card import Card
 
 
 class CardContainer(ctk.CTkScrollableFrame):
-    def __init__(self, master, model, card_w=160, card_h=250, pad_x=4, pad_y=4, **kwargs):
+    def __init__(self, master, model, tab_name: str, card_w=160, card_h=250, pad_x=4, pad_y=4, **kwargs):
         super().__init__(master, **kwargs)
 
         self.configure(fg_color="transparent")
-        self.cards = []     # Guarda os cards do container
-        self.model = model  # Modelo
+        self.tab_name = tab_name
+        self.cards = []
+        self.model = model
 
         self.card_w = card_w
         self.card_h = card_h
@@ -29,8 +30,8 @@ class CardContainer(ctk.CTkScrollableFrame):
     def add_card(self, card_info: dict):
         """ Adiciona um novo card ao container. """
         card = Card(self, card_info)
-        card.details_button.configure(command=lambda: self.master.master.master.master.show_item_details(self.model, card_info))
-        card.delete_button.configure(command=lambda: card.remove_record(self.model))
+        card.buttons["Detalhes"].configure(command=lambda: self.master.master.master.master.show_item_details(self.model, card_info))
+        card.buttons["Deletar"].configure(command=lambda: self.master.master.master.master.remove_record(self.tab_name, card_info["id"]))
         self.cards.append(card)
         self.relayout()
 

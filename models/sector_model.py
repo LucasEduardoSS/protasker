@@ -21,7 +21,3 @@ class Sector(BaseModel):
 
     def __repr__(self):
         return f"<Sector: {self.name}>"
-
-    @staticmethod
-    def get_by_name(name: str):
-        return Sector.get_or_none(Sector.name == name)

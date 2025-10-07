@@ -1,10 +1,15 @@
-from customtkinter import CTkFrame, CTkLabel
+from customtkinter import CTkFrame, CTkLabel, CTkButton
+from peewee import IntegrityError
 
-from views.components.edit_button import EditButton
+from services.data_facade import DataFacade
+
 from views.windows.edit_view import EditView
+from views.components.tooltip import Tooltip
+from views.windows.alert_view import AlertView
 
 from utils.widgets_utils import format_card_info
 from utils.widgets_utils import propagate_hover_bind
+from utils.image_utils import get_image_as_tkimage
 
 
 class ListItem(CTkFrame):
@@ -16,15 +21,29 @@ class ListItem(CTkFrame):
         self.model = master.model
         self.model_info = model_info
         self._item_info_frame = None
+        self.buttons = {}
 
         # Configuração do card
         self._normal_fg = "#3E4D66"
         self._hover_fg = "#465773"
         self.configure(fg_color="#3E4D66", border_color="#777", height=30)
 
-        # Botão de editar registro
-        edit_button = EditButton(self, text="Editar", command=self.edit_record)
-        edit_button.pack(side="right", padx=(0, 5))
+        self.buttons_info = [
+            {"tooltip": "Deletar", "command": None, "icon": get_image_as_tkimage("delete-icon.png", 20)},
+            {"tooltip": "Detalhes", "command": None, "icon": get_image_as_tkimage("list-icon.png", 20)},
+            {"tooltip": "Editar", "command": self._edit_record, "icon": get_image_as_tkimage("edit-icon.png", 20)}
+
+        ]
+
+        # Constrói os botões do card
+        for button in self.buttons_info:
+            button_widget = ListItemButton(self, icon=button["icon"], command=button["command"])
+            Tooltip(button_widget, button["tooltip"])
+
+            if not "total_tasks" in model_info or button["tooltip"] != "Editar":
+                button_widget.pack(side="right", padx=0, pady=0)
+
+            self.buttons[button["tooltip"]] = button_widget
 
         # Carrega os campos
         if model_info is not None or model_info == {}:
@@ -75,18 +94,32 @@ class ListItem(CTkFrame):
         # Propaga o hover bind para todos os widgets do item
         propagate_hover_bind(self, self._hover_fg, self._normal_fg)
 
-    def edit_record(self):
+    def _edit_record(self):
         """Abre uma janela de edição do registro."""
         EditView(
+            title="Editar registro",
             model_cls=self.model,
             model_info=self.model_info,
-            on_save=self.apply_update
+            on_save=self._apply_update
         )
 
-    def apply_update(self, updated_row: dict):
+    def _apply_update(self, updated_row: dict):
         """Chamado pela janela de edição após um save sucedido."""
         self.model_info = updated_row
         self.load_fields(updated_row)
 
-    def toggle_filter_tab(self):
-        pass
+
+class ListItemButton(CTkButton):
+    def __init__(self, master, icon, command,  **kwargs):
+        super().__init__(master, **kwargs)
+
+        self.configure(
+            text="",
+            width=30,
+            height=20,
+            font=("Tahoma", 11),
+            image=icon,
+            fg_color="transparent",
+            hover_color="#3E4D66",
+            command=command
+        )

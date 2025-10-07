@@ -9,9 +9,10 @@ class ListContainer(CTkScrollableFrame):
     Recebe um modelo/tabela de dados.
     """
 
-    def __init__(self, master, model, **kwargs):
+    def __init__(self, master, model, tab_name: str, **kwargs):
         super().__init__(master, **kwargs)
 
+        self.tab_name = tab_name
         self.model = model
         self.configure(fg_color="transparent")
 
@@ -33,9 +34,16 @@ class ListContainer(CTkScrollableFrame):
     def add_item(self, item_info: dict):
         """ Adiciona um novo item ao container """
         item = ListItem(self, item_info)
+        item.buttons["Detalhes"].configure(command=lambda: self.master.master.master.master.show_item_details(self.model, item_info))
+        item.buttons["Deletar"].configure(command=lambda: self.master.master.master.master.remove_record(self.tab_name, item_info["id"]))
         item.pack(anchor="nw", side="top", fill="x", padx=(0, 10), pady=5)
         self.list_items.append(item)
         #self.relayout()
+
+    def remove_item(self, item):
+        self.list_items.remove(item)
+        item.destroy()
+        self.relayout()
 
     def relayout(self):
         """ Recalcula layout do container de itens """
